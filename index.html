@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RentOS — посуточная аренда на автопилоте</title>
+<meta name="description" content="RentOS заселяет гостей, проверяет паспорта, выдаёт коды от замков, отвечает в чате и возвращает депозиты — пока ты спишь.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --primary:#5B7CDE; --primary-hi:#8AA6FF; --primary-hover:#4A68C8;
+    --ink:#1B2130; --sub:#6B7280; --faint:#9AA3B2;
+    --line:#ECEEF3; --line-strong:#DCE0EA; --paper:#F5F6FA; --card:#FFFFFF;
+    --success:#2FB344; --danger:#E24B4A; --warn:#F5A524;
+    --midnight:#0C1120; --midnight-2:#0E1424; --night-card:#161E33; --night-line:#26314D;
+    --night-ink:#EAEFFB; --night-sub:#93A0C2;
+    --disp:'Unbounded',system-ui,sans-serif;
+    --body:'Inter',-apple-system,system-ui,sans-serif;
+    --mono:'JetBrains Mono',ui-monospace,monospace;
+    --maxw:1120px;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{font-family:var(--body);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:500}
+
+  /* ---- buttons ---- */
+  .btn{display:inline-flex;align-items:center;gap:10px;height:54px;padding:0 28px;border-radius:14px;
+    font-family:var(--body);font-weight:600;font-size:16px;cursor:pointer;border:none;
+    transition:transform .15s ease, box-shadow .15s ease, background .15s ease;white-space:nowrap}
+  .btn:active{transform:translateY(1px)}
+  .btn-primary{background:var(--primary);color:#fff;box-shadow:0 10px 30px rgba(91,124,222,.4)}
+  .btn-primary:hover{background:var(--primary-hover);box-shadow:0 14px 40px rgba(91,124,222,.5)}
+  .btn-glow{background:linear-gradient(180deg,#6E8FF0,#5B7CDE);color:#fff;
+    box-shadow:0 0 0 1px rgba(138,166,255,.3), 0 12px 44px rgba(91,124,222,.55)}
+  .btn-ghost{background:transparent;color:var(--night-ink);border:1px solid var(--night-line)}
+  .btn-ghost:hover{border-color:var(--primary-hi)}
+  :focus-visible{outline:3px solid var(--primary-hi);outline-offset:3px;border-radius:6px}
+
+  /* ================= NAV ================= */
+  nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(12,17,32,0);backdrop-filter:blur(0);
+    transition:background .3s ease, backdrop-filter .3s ease, border-color .3s ease;border-bottom:1px solid transparent}
+  nav.solid{background:rgba(245,246,250,.82);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+  .nav-in{max-width:var(--maxw);margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:space-between}
+  .logo{font-family:var(--disp);font-weight:800;font-size:20px;letter-spacing:-.02em;color:#fff;transition:color .3s}
+  .logo .dot{color:var(--primary-hi)}
+  nav.solid .logo{color:var(--ink)}
+  .nav-cta{height:42px;padding:0 20px;font-size:14px}
+
+  /* ================= HERO (NIGHT) ================= */
+  .hero{position:relative;background:radial-gradient(120% 90% at 70% -10%, #1B2742 0%, var(--midnight-2) 45%, var(--midnight) 100%);
+    color:var(--night-ink);overflow:hidden;padding:160px 0 110px}
+  .stars{position:absolute;inset:0;pointer-events:none}
+  .star{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--primary-hi);opacity:.0;
+    animation:blink 4s infinite ease-in-out}
+  @keyframes blink{0%,100%{opacity:.05;transform:scale(.8)}50%{opacity:.7;transform:scale(1.3)}}
+  .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;position:relative;z-index:2}
+  .hero .clock{font-family:var(--mono);font-size:13px;color:var(--primary-hi);letter-spacing:.18em;margin-bottom:22px;
+    display:inline-flex;align-items:center;gap:10px}
+  .hero .clock .pulse{width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 0 rgba(245,165,36,.6);animation:ping 1.6s infinite}
+  @keyframes ping{0%{box-shadow:0 0 0 0 rgba(245,165,36,.6)}70%{box-shadow:0 0 0 12px rgba(245,165,36,0)}100%{box-shadow:0 0 0 0 rgba(245,165,36,0)}}
+  .hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(38px,6vw,66px);line-height:1.02;letter-spacing:-.03em;margin-bottom:24px}
+  .hero h1 .em{color:var(--primary-hi)}
+  .hero p.lead{font-size:clamp(17px,2vw,20px);color:var(--night-sub);max-width:560px;margin-bottom:36px}
+  .hero p.lead b{color:var(--night-ink);font-weight:600}
+  .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+  .hero-note{font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-top:22px}
+
+  /* phone mock with raining notifications */
+  .phone{position:relative;width:300px;height:480px;margin:0 auto;border-radius:40px;
+    background:linear-gradient(180deg,#1A2238,#10162a);border:1px solid var(--night-line);
+    box-shadow:0 40px 120px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);padding:18px}
+  .phone .screen{width:100%;height:100%;border-radius:26px;background:#0A0F1E;overflow:hidden;position:relative;border:1px solid #1d2742}
+  .phone .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:90px;height:6px;border-radius:99px;background:#26314D;z-index:5}
+  .toast{position:absolute;left:12px;right:12px;background:var(--night-card);border:1px solid var(--night-line);
+    border-radius:14px;padding:11px 12px;display:flex;gap:10px;align-items:center;opacity:0;transform:translateY(-14px);
+    box-shadow:0 8px 24px rgba(0,0,0,.4)}
+  .toast .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;flex:0 0 auto}
+  .toast .tx{font-size:12px;color:var(--night-ink);line-height:1.25}
+  .toast .tx small{display:block;color:var(--night-sub);font-family:var(--mono);font-size:10px;margin-top:2px}
+  @keyframes drop{0%{opacity:0;transform:translateY(-18px)}8%{opacity:1;transform:translateY(0)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(8px)}}
+
+  /* ================= MARQUEE ================= */
+  .marquee{background:var(--midnight);border-top:1px solid var(--night-line);border-bottom:1px solid var(--night-line);
+    overflow:hidden;padding:16px 0}
+  .marquee .track{display:flex;gap:48px;white-space:nowrap;animation:slide 26s linear infinite;width:max-content}
+  .marquee span{font-family:var(--mono);font-size:13px;color:var(--night-sub);letter-spacing:.08em;display:inline-flex;gap:48px}
+  .marquee b{color:var(--primary-hi);font-weight:500}
+  @keyframes slide{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+  /* ================= TRUST (night -> dawn) ================= */
+  .trust{background:linear-gradient(180deg,var(--midnight) 0%, #1A2238 40%, #4A5982 80%, var(--paper) 100%);
+    color:var(--night-ink);padding:110px 0 130px}
+  .sec-head{max-width:680px;margin-bottom:56px}
+  .trust .eyebrow{color:var(--primary-hi)}
+  .sec-head h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,44px);line-height:1.08;letter-spacing:-.02em;margin:14px 0 16px}
+  .sec-head p{font-size:18px;color:var(--night-sub);max-width:560px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .stat{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:18px;padding:26px 22px;
+    backdrop-filter:blur(6px)}
+  .stat .num{font-family:var(--mono);font-weight:700;font-size:clamp(30px,3.4vw,42px);color:#fff;letter-spacing:-.02em;line-height:1}
+  .stat .lbl{font-size:14px;color:var(--night-sub);margin-top:12px;line-height:1.35}
+  .badges{display:flex;flex-wrap:wrap;gap:12px;margin-top:42px}
+  .badge{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--night-ink);
+    border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.04);border-radius:99px;padding:9px 16px}
+  .badge b{color:var(--primary-hi);font-weight:500}
+
+  /* ================= GAME (night shift) ================= */
+  .game{background:radial-gradient(120% 80% at 50% 0%, #16203a, var(--midnight) 70%);color:var(--night-ink);
+    padding:100px 0 110px;position:relative}
+  .game .sec-head{margin:0 auto 40px;text-align:center}
+  .game .eyebrow{color:var(--warn)}
+  .game h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,44px);letter-spacing:-.02em;margin:14px 0 14px}
+  .game .sub{color:var(--night-sub);font-size:17px;max-width:540px;margin:0 auto}
+
+  .board-shell{max-width:760px;margin:0 auto;background:var(--night-card);border:1px solid var(--night-line);
+    border-radius:24px;overflow:hidden;box-shadow:0 40px 120px rgba(0,0,0,.55);transition:background .8s ease, border-color .8s ease}
+  .board-top{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--night-line);
+    font-family:var(--mono);font-size:13px;color:var(--night-sub)}
+  .board-top .live{display:inline-flex;align-items:center;gap:8px;color:var(--warn)}
+  .board-top .live .pulse{width:8px;height:8px;border-radius:50%;background:var(--warn);animation:ping 1.6s infinite}
+  .meters{display:flex;gap:22px}
+  .meter b{color:var(--night-ink);font-weight:700}
+  .meter .red{color:var(--danger)}
+  .meter .grn{color:var(--success)}
+
+  .board{position:relative;height:380px;padding:14px;display:grid;
+    grid-template-columns:repeat(3,1fr);grid-auto-rows:min-content;gap:10px;align-content:start;overflow:hidden}
+  .gcard{background:var(--midnight-2);border:1px solid var(--night-line);border-radius:14px;padding:12px;cursor:pointer;
+    user-select:none;position:relative;animation:pop .25s ease;transition:opacity .3s, transform .3s}
+  .gcard:hover{border-color:var(--primary-hi)}
+  @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
+  .gcard .row{display:flex;gap:9px;align-items:flex-start}
+  .gcard .gico{font-size:18px;flex:0 0 auto}
+  .gcard .gtx{font-size:12.5px;line-height:1.3;color:var(--night-ink)}
+  .gcard .bar{height:4px;border-radius:99px;background:#0a0f1e;margin-top:10px;overflow:hidden}
+  .gcard .bar i{display:block;height:100%;background:var(--warn);width:100%;transition:width .1s linear}
+  .gcard.urgent .bar i{background:var(--danger)}
+  .gcard.resolved{border-color:var(--success);opacity:.55}
+  .gcard.resolved .bar i{background:var(--success);width:100%!important}
+  .gcard .check{position:absolute;inset:0;display:grid;place-items:center;font-size:26px;color:var(--success);opacity:0}
+  .gcard.resolved .check{opacity:1}
+
+  .board-overlay{position:absolute;inset:0;background:rgba(10,15,30,.86);backdrop-filter:blur(4px);
+    display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:30px;z-index:6}
+  .board-overlay.show{display:flex}
+  .board-overlay h3{font-family:var(--disp);font-weight:600;font-size:clamp(22px,3.4vw,30px);margin-bottom:10px}
+  .board-overlay p{color:var(--night-sub);font-size:15px;max-width:420px;margin-bottom:8px}
+  .board-overlay .score{font-family:var(--mono);font-size:14px;color:var(--night-ink);margin:16px 0 22px;line-height:1.8}
+  .board-overlay .score .red{color:var(--danger)}
+  .board-start h3{margin-bottom:14px}
+
+  .calm-line{text-align:center;color:var(--success);font-family:var(--mono);font-size:14px;margin-top:22px;opacity:0;transition:opacity .6s}
+  .calm-line.show{opacity:1}
+
+  /* ================= SALE (day) ================= */
+  .sale{background:var(--paper);padding:110px 0 60px}
+  .sale .eyebrow{color:var(--primary)}
+  .sale .sec-head{margin:0 auto 56px;text-align:center;max-width:640px}
+  .sale h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,46px);color:var(--ink);letter-spacing:-.02em;margin:14px 0 16px}
+  .sale .sec-head p{color:var(--sub);font-size:18px}
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:28px;
+    box-shadow:0 1px 2px rgba(16,24,40,.04), 0 12px 32px rgba(16,24,40,.06);transition:transform .2s, box-shadow .2s}
+  .feat:hover{transform:translateY(-4px);box-shadow:0 1px 2px rgba(16,24,40,.04), 0 22px 48px rgba(16,24,40,.1)}
+  .feat .fico{width:48px;height:48px;border-radius:13px;background:rgba(91,124,222,.1);display:grid;place-items:center;
+    font-size:22px;margin-bottom:18px}
+  .feat h4{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .feat .ben{font-size:12px;font-family:var(--mono);color:var(--primary);letter-spacing:.04em;margin-bottom:10px;text-transform:uppercase}
+  .feat p{font-size:14.5px;color:var(--sub);line-height:1.55}
+
+  /* anchor / kassa block */
+  .anchor{max-width:var(--maxw);margin:64px auto 0;background:linear-gradient(135deg,#1B2742,var(--midnight-2));
+    border-radius:26px;padding:54px;color:var(--night-ink);display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;
+    box-shadow:0 30px 80px rgba(16,24,40,.25)}
+  .anchor .eyebrow{color:var(--primary-hi)}
+  .anchor h3{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;margin:14px 0 16px;line-height:1.1}
+  .anchor p{color:var(--night-sub);font-size:16px;margin-bottom:14px}
+  .anchor ul{list-style:none;display:grid;gap:12px}
+  .anchor li{display:flex;gap:12px;align-items:flex-start;font-size:15px;color:var(--night-ink)}
+  .anchor li .tick{color:var(--success);flex:0 0 auto;font-weight:700}
+
+  /* ================= FINAL CTA ================= */
+  .final{background:var(--paper);padding:90px 0 100px;text-align:center}
+  .final-card{max-width:760px;margin:0 auto;background:radial-gradient(120% 120% at 50% 0%, #2A3A66, var(--midnight) 75%);
+    border-radius:30px;padding:64px 40px;color:var(--night-ink);position:relative;overflow:hidden}
+  .final-card .eyebrow{color:var(--primary-hi)}
+  .final-card h2{font-family:var(--disp);font-weight:800;font-size:clamp(28px,4.4vw,48px);letter-spacing:-.02em;margin:16px 0 18px;line-height:1.05}
+  .final-card p{color:var(--night-sub);font-size:18px;max-width:480px;margin:0 auto 32px}
+  .final-card .btn{height:58px;font-size:17px}
+  .final-card .smallnote{font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-top:20px}
+
+  /* ================= FOOTER ================= */
+  footer{background:var(--midnight);color:var(--night-sub);padding:64px 0 40px;border-top:1px solid var(--night-line)}
+  .foot-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:44px}
+  footer .logo{color:#fff;font-size:22px;margin-bottom:14px;display:inline-block}
+  footer .blurb{font-size:14px;color:var(--night-sub);max-width:300px;line-height:1.6}
+  .foot-col h5{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:16px}
+  .foot-col a, .foot-col span{display:block;font-size:14px;color:var(--night-sub);margin-bottom:11px;transition:color .15s}
+  .foot-col a:hover{color:var(--primary-hi)}
+  .legal{border-top:1px solid var(--night-line);padding-top:26px;font-size:12.5px;color:var(--faint);line-height:1.75}
+  .legal .req{font-family:var(--mono);font-size:11.5px;margin-top:14px;color:var(--night-sub)}
+  .legal a{color:var(--night-sub);text-decoration:underline;text-underline-offset:2px}
+
+  /* ================= AI SECTION (day) ================= */
+  .ai{background:var(--paper);padding:104px 0 10px}
+  .ai .eyebrow{color:var(--primary)}
+  .ai .sec-head{max-width:700px;margin:0 auto 46px;text-align:center}
+  .ai h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,46px);color:var(--ink);letter-spacing:-.02em;margin:14px 0 16px}
+  .ai .sec-head p{color:var(--sub);font-size:18px;max-width:580px;margin:0 auto}
+
+  .spotlight{background:linear-gradient(135deg,#1B2742,var(--midnight-2));border-radius:28px;padding:50px;color:var(--night-ink);
+    display:grid;grid-template-columns:1.02fr .98fr;gap:46px;align-items:center;box-shadow:0 30px 90px rgba(16,24,40,.28);position:relative;overflow:hidden}
+  .spotlight .glowdot{position:absolute;width:340px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(138,166,255,.22),transparent 70%);top:-120px;right:-80px;pointer-events:none}
+  .killer{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:#0C1120;background:var(--primary-hi);padding:7px 14px;border-radius:99px;font-weight:700;margin-bottom:20px}
+  .spotlight h3{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3vw,34px);letter-spacing:-.02em;line-height:1.12;margin-bottom:16px;position:relative}
+  .spotlight p{color:var(--night-sub);font-size:16px;line-height:1.6;margin-bottom:14px;position:relative}
+  .spotlight p b{color:var(--night-ink);font-weight:600}
+  .spotlight .who{font-family:var(--mono);font-size:12px;color:var(--primary-hi);letter-spacing:.05em;position:relative}
+
+  .checkpane{background:#0A0F1E;border:1px solid var(--night-line);border-radius:18px;padding:20px;position:relative}
+  .checkpane .ph{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-bottom:16px}
+  .checkpane .ai-on{color:var(--primary-hi);display:inline-flex;gap:7px;align-items:center}
+  .checkpane .ai-on .d{width:7px;height:7px;border-radius:50%;background:var(--primary-hi);animation:ping 1.6s infinite}
+  .cline{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;background:var(--night-card);margin-bottom:9px;
+    opacity:.22;transform:translateX(-8px);transition:opacity .45s ease,transform .45s ease}
+  .cline.done{opacity:1;transform:none}
+  .cline .cmark{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700;flex:0 0 auto;
+    background:rgba(47,179,68,.16);color:var(--success)}
+  .cline.fail .cmark{background:rgba(226,75,74,.16);color:var(--danger)}
+  .cline .ctx{font-size:13.5px;color:var(--night-ink)}
+  .cline.fail .ctx{color:var(--night-sub)}
+  .verdict{margin-top:14px;font-family:var(--mono);font-size:12.5px;line-height:1.5;padding:12px 14px;border-radius:11px;
+    background:rgba(245,165,36,.1);border:1px solid rgba(245,165,36,.32);color:var(--warn);opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+  .verdict.show{opacity:1;transform:none}
+
+  .ai-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+  .amini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;
+    box-shadow:0 1px 2px rgba(16,24,40,.04),0 12px 32px rgba(16,24,40,.06)}
+  .amini .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--primary);text-transform:uppercase;margin-bottom:12px}
+  .amini .afico{width:44px;height:44px;border-radius:12px;background:rgba(91,124,222,.1);display:grid;place-items:center;font-size:20px;margin-bottom:16px}
+  .amini h4{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
+  .amini p{font-size:14px;color:var(--sub);line-height:1.55}
+
+  /* AI pill on feature cards */
+  .ai-pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;
+    color:var(--primary);background:rgba(91,124,222,.1);padding:4px 9px;border-radius:99px;text-transform:uppercase;
+    vertical-align:middle;margin-left:8px;font-weight:500}
+
+  /* nav login + exclusivity */
+  .nav-actions{display:flex;align-items:center;gap:14px}
+  .nav-login{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;color:var(--night-ink);
+    height:42px;padding:0 14px;border-radius:11px;border:1px solid var(--night-line);transition:border-color .15s,color .3s,background .3s}
+  .nav-login:hover{border-color:var(--primary-hi)}
+  .nav-login svg{width:14px;height:14px;opacity:.8}
+  nav.solid .nav-login{color:var(--ink);border-color:var(--line-strong)}
+
+  .members{margin-top:30px;padding-top:26px;border-top:1px solid var(--night-line);display:flex;align-items:center;justify-content:center;
+    gap:14px;flex-wrap:wrap;font-size:14px;color:var(--night-sub)}
+  .members a{display:inline-flex;align-items:center;gap:7px;color:var(--primary-hi);font-weight:600}
+  .members a svg{width:14px;height:14px}
+
+  /* ================= RESPONSIVE ================= */
+  @media(max-width:920px){
+    .hero-grid{grid-template-columns:1fr;gap:48px}
+    .phone{display:none}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .feats{grid-template-columns:1fr 1fr}
+    .anchor{grid-template-columns:1fr;padding:40px 28px}
+    .foot-grid{grid-template-columns:1fr 1fr}
+    .spotlight{grid-template-columns:1fr;padding:40px 28px}
+    .ai-mini{grid-template-columns:1fr}
+  }
+  @media(max-width:600px){
+    .hero{padding:130px 0 80px}
+    .stats{grid-template-columns:1fr 1fr}
+    .feats{grid-template-columns:1fr}
+    .board{grid-template-columns:repeat(2,1fr);height:430px}
+    .meters{gap:14px;font-size:11px}
+    .anchor{padding:32px 22px}
+    .final-card{padding:48px 24px}
+    .foot-grid{grid-template-columns:1fr}
+    .nav-cta{display:none}
+    .nav-login span{display:none}
+    .nav-login{padding:0 11px}
+    .spotlight{padding:32px 22px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+    .star{opacity:.3}
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="nav">
+  <div class="nav-in">
+    <a href="#top" class="logo">RentOS<span class="dot">.</span></a>
+    <div class="nav-actions">
+      <a href="#" data-cabinet class="nav-login" title="Личный кабинет">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        <span>Войти</span>
+      </a>
+      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-primary nav-cta">Получить доступ</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<header class="hero" id="top">
+  <div class="stars" id="stars"></div>
+  <div class="wrap hero-grid">
+    <div>
+      <div class="clock"><span class="pulse"></span> 03:14 · ВТОРНИК · ТЕБЕ ПИШЕТ ГОСТЬ</div>
+      <h1>Гость не может войти<br>в квартиру.<br><span class="em">Угадай, кто проснулся.</span></h1>
+      <p class="lead">Ты. Снова. А <b>RentOS</b> заселяет гостей, проверяет паспорта, выдаёт коды от замков, отвечает в чате и возвращает депозиты. Круглосуточно. Без тебя.</p>
+      <div class="hero-actions">
+        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Забрать своё время →</a>
+        <a href="#game" class="btn btn-ghost">Прожить смену вручную</a>
+      </div>
+      <div class="hero-note">// для профессиональных операторов посуточной аренды</div>
+    </div>
+    <div>
+      <div class="phone" aria-hidden="true">
+        <div class="screen">
+          <div class="notch"></div>
+          <div class="toast" id="t1" style="top:38px"><div class="ico" style="background:rgba(245,165,36,.15)">🔑</div><div class="tx">Код от замка не работает<small>гость, 03:14</small></div></div>
+          <div class="toast" id="t2" style="top:104px"><div class="ico" style="background:rgba(91,124,222,.18)">💬</div><div class="tx">«Во сколько заселение?»<small>гость, 03:21</small></div></div>
+          <div class="toast" id="t3" style="top:170px"><div class="ico" style="background:rgba(226,75,74,.15)">💸</div><div class="tx">Вернуть депозит 5 000 ₽<small>выезд, 03:40</small></div></div>
+          <div class="toast" id="t4" style="top:236px"><div class="ico" style="background:rgba(47,179,68,.15)">🧹</div><div class="tx">Горничная не подтвердила<small>уборка завтра</small></div></div>
+          <div class="toast" id="t5" style="top:302px"><div class="ico" style="background:rgba(91,124,222,.18)">📅</div><div class="tx">Новое бронирование<small>RealtyCalendar</small></div></div>
+          <div class="toast" id="t6" style="top:368px"><div class="ico" style="background:rgba(245,165,36,.15)">🛂</div><div class="tx">Паспорт на проверку<small>заселение через 1 ч</small></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MARQUEE -->
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    <span>YandexGPT <b>·</b> Yandex Vision OCR <b>·</b> RealtyCalendar <b>·</b> amoCRM <b>·</b> Wazzup <b>·</b> Tuya <b>·</b> TT&nbsp;Lock <b>·</b> T-Bank <b>·</b> СБП <b>·</b> онлайн-касса 54-ФЗ <b>·</b> YandexGPT <b>·</b> Yandex Vision OCR <b>·</b> RealtyCalendar <b>·</b> amoCRM <b>·</b> Wazzup <b>·</b> Tuya <b>·</b> TT&nbsp;Lock <b>·</b> T-Bank <b>·</b> СБП <b>·</b> онлайн-касса 54-ФЗ <b>·</b></span>
+  </div>
+</div>
+
+<!-- TRUST -->
+<section class="trust">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Не обещания. Функции.</div>
+      <h2>Что система забирает себе</h2>
+      <p>Это не «помощник» и не чат-бот. Это операционный слой, который реально делает работу — а не советует, как её сделать.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="num">24/7</div><div class="lbl">Заселение и ответы гостям без твоего участия</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">ключей из рук в руки — код от умного замка вместо встречи</div></div>
+      <div class="stat"><div class="num">AES-256</div><div class="lbl">шифрование паспортных данных гостей</div></div>
+      <div class="stat"><div class="num">&lt;60 сек</div><div class="lbl">от брони до отправленного гостю договора и инструкции</div></div>
+    </div>
+    <div class="badges">
+      <div class="badge">Построен под <b>152-ФЗ</b> · хранение ПД</div>
+      <div class="badge">Онлайн-касса <b>54-ФЗ</b> в комплекте</div>
+      <div class="badge">Депозиты через <b>холд карты</b></div>
+      <div class="badge">Договор + селфи + <b>SHA-256</b> подпись</div>
+      <div class="badge">Архив договоров <b>3 года</b>, авто-удаление</div>
+      <div class="badge">Изоляция данных <b>по тенантам</b></div>
+    </div>
+  </div>
+</section>
+
+<!-- GAME -->
+<section class="game" id="game">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Вовлечение · мини-игра</div>
+      <h2>Прими ночную смену</h2>
+      <p class="sub">8 квартир. Сейчас 03:14. Задачи будут сыпаться. Успей по каждой кликнуть, пока таймер не сгорел. Это просто. Наверное.</p>
+    </div>
+
+    <div class="board-shell" id="shell">
+      <div class="board-top">
+        <span class="live"><span class="pulse"></span> ЖИВАЯ СМЕНА</span>
+        <div class="meters">
+          <span class="meter">Нервы: <b id="m-nerve">100%</b></span>
+          <span class="meter">Гости: <b class="grn" id="m-happy">0</b> / <b class="red" id="m-lost">0</b></span>
+          <span class="meter">Потеряно: <b class="red" id="m-money">0 ₽</b></span>
+        </div>
+      </div>
+      <div class="board" id="board">
+        <div class="board-overlay board-start show" id="ov-start">
+          <h3>Готов отдежурить за свою недвижимость?</h3>
+          <p>Кликай по задачам как можно быстрее. Каждая просроченная — это злой гость и потерянные деньги.</p>
+          <button class="btn btn-glow" id="btn-start">Начать смену</button>
+        </div>
+        <div class="board-overlay" id="ov-end">
+          <h3 id="end-title">Смена окончена.</h3>
+          <p id="end-sub">Ты держался. Но в одиночку всё не успеть — это не лень, это математика.</p>
+          <div class="score" id="end-score"></div>
+          <button class="btn btn-glow" id="btn-rentos">⚡ Включить RentOS и пересмотреть смену</button>
+        </div>
+      </div>
+    </div>
+    <div class="calm-line" id="calm">// RentOS закрыл все задачи сам. Ты просто спал.</div>
+  </div>
+</section>
+
+<!-- AI -->
+<section class="ai" id="ai">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">ИИ внутри · YandexGPT + Vision</div>
+      <h2>Искусственный интеллект, который работает руками</h2>
+      <p>Не «спросите у ассистента». ИИ сам проверяет, распознаёт и отвечает — и зовёт тебя, только когда правда нужен человек.</p>
+    </div>
+
+    <div class="spotlight">
+      <div class="glowdot" aria-hidden="true"></div>
+      <div>
+        <div class="killer">★ Киллер-фича</div>
+        <h3>ИИ-приёмка уборки по фото</h3>
+        <p>Горничная закончила и прислала фото. <b>ИИ-зрение сверяет каждую зону</b> с эталоном квартиры: кровати, санузел, мусор, полотенца, кухня. Чисто — задача закрывается. Нет — возвращается на доработку с конкретным замечанием.</p>
+        <p>Ты не едешь через весь город проверять уборку. И гость не заезжает в грязь — потому что ИИ поймал это раньше тебя.</p>
+        <div class="who">// до заезда гостя · без твоего участия</div>
+      </div>
+      <div class="checkpane" id="checkpane">
+        <div class="ph"><span>Кв. на Тверской · приёмка</span><span class="ai-on"><span class="d"></span>ИИ проверяет</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Кровати заправлены</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Санузел вымыт</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Мусор вынесен</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Полотенца заменены</span></div>
+        <div class="cline fail" data-fail><span class="cmark">✕</span><span class="ctx">Посуда не убрана на кухне</span></div>
+        <div class="verdict" id="verdict">ИИ: уборка не принята. Горничной отправлено 1 замечание. Гость заехал бы на грязную кухню — ты бы об этом не узнал.</div>
+      </div>
+    </div>
+
+    <div class="ai-mini">
+      <div class="amini">
+        <div class="afico">💬</div>
+        <div class="tag">YandexGPT</div>
+        <h4>ИИ-переписка с гостем</h4>
+        <p>Отвечает на вопросы живым языком: время заезда, как пройти, парковка, поздний выезд. Тебе доходит только то, что требует решения человека.</p>
+      </div>
+      <div class="amini">
+        <div class="afico">🛂</div>
+        <div class="tag">Yandex Vision OCR</div>
+        <h4>Распознавание паспорта</h4>
+        <p>ИИ считывает данные из фото паспорта при самозаселении, заполняет договор и шифрует ПД. Без ручного ввода и без сканов на столе.</p>
+      </div>
+      <div class="amini">
+        <div class="afico">🧭</div>
+        <div class="tag">ИИ-логистика</div>
+        <h4>Распределение уборок</h4>
+        <p>ИИ ставит задачи на уборку от выездов и распределяет их между горничными — с учётом графика и адресов. Меньше окон, меньше простоя.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SALE -->
+<section class="sale">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Продажа · от хаоса к системе</div>
+      <h2>Каждая задача из смены — это функция</h2>
+      <p>То, что ночью отнимало у тебя сон, днём работает само. Вот как именно.</p>
+    </div>
+    <div class="feats">
+      <div class="feat">
+        <div class="fico">🔑</div>
+        <div class="ben">было: код не работает</div>
+        <h4>Самозаселение и умные замки</h4>
+        <p>Гость проходит заселение сам: верификация личности, договор, селфи — и получает временный код от замка Tuya или TT&nbsp;Lock. Код сам выдаётся и сам гаснет после выезда.</p>
+      </div>
+      <div class="feat">
+        <div class="fico">💬</div>
+        <div class="ben">было: «во сколько заселение?»</div>
+        <h4>Авто-ответы гостю <span class="ai-pill">✦ ИИ</span></h4>
+        <p>Типовые вопросы — время заезда, как пройти, где парковка — закрывает ИИ-переписка. Тебе прилетает только то, что правда требует человека.</p>
+      </div>
+      <div class="feat">
+        <div class="fico">🛂</div>
+        <div class="ben">было: паспорт на проверку</div>
+        <h4>Проверка личности и договор <span class="ai-pill">✦ ИИ</span></h4>
+        <p>Паспорт распознаётся, данные шифруются (AES-256), договор формируется с селфи и хешем подписи. Архив на 3 года с автоудалением — без папок и сканов на столе.</p>
+      </div>
+      <div class="feat">
+        <div class="fico">💸</div>
+        <div class="ben">было: вернуть депозит</div>
+        <h4>Депозиты и платежи</h4>
+        <p>Залог — холдом по карте, без живых переводов туда-сюда. Приём оплаты через СБП, чеки по 54-ФЗ пробивает встроенная онлайн-касса.</p>
+      </div>
+      <div class="feat">
+        <div class="fico">🧹</div>
+        <div class="ben">было: горничная не подтвердила</div>
+        <h4>Координация уборок <span class="ai-pill">✦ ИИ-приёмка</span></h4>
+        <p>Задачи на уборку ставятся от выездов автоматически, у горничной свой доступ и код от замка. А готовую уборку принимает ИИ по фото — тебе видно, кто, когда и принято ли.</p>
+      </div>
+      <div class="feat">
+        <div class="fico">📅</div>
+        <div class="ben">было: новое бронирование в 3 ночи</div>
+        <h4>Брони из всех каналов</h4>
+        <p>Синхронизация с RealtyCalendar и календарями по iCal. Новая бронь сама запускает весь сценарий: договор, код, сообщения, уборку.</p>
+      </div>
+    </div>
+
+    <!-- ANCHOR -->
+    <div class="anchor">
+      <div>
+        <div class="eyebrow">Почему это окупается</div>
+        <h3>Онлайн-касса и приём платежей — уже внутри</h3>
+        <p>Тебе не нужно отдельно покупать кассу, подключать эквайринг и сводить это всё руками. RentOS — это и операционка, и платёжный контур в одном месте.</p>
+      </div>
+      <ul>
+        <li><span class="tick">✓</span> Онлайн-касса по 54-ФЗ — чеки пробиваются сами</li>
+        <li><span class="tick">✓</span> Приём оплат от гостей через СБП</li>
+        <li><span class="tick">✓</span> Депозиты холдом по карте, без ручных возвратов</li>
+        <li><span class="tick">✓</span> Выплаты на твой счёт по графику платформы</li>
+        <li><span class="tick">✓</span> Для ИП на УСН — без бумажной волокиты</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FINAL CTA -->
+<section class="final">
+  <div class="wrap">
+    <div class="final-card">
+      <div class="eyebrow">Закрытая бета</div>
+      <h2>Отдай ночную смену системе</h2>
+      <p>Подключаем первых операторов вручную и под задачу. Напиши боту — расскажем, подойдёт ли RentOS под твой портфель.</p>
+      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Получить доступ в Telegram →</a>
+      <div class="smallnote">@rentosbetabot · ответим лично, без спама</div>
+      <div class="members">
+        Уже среди подключённых операторов?
+        <a href="#" data-cabinet>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          Войти в личный кабинет
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <div class="foot-grid">
+      <div>
+        <span class="logo">RentOS<span style="color:var(--primary-hi)">.</span></span>
+        <p class="blurb">Операционная система для профессиональных операторов посуточной аренды. Заселение, платежи, уборки и документы — на автопилоте.</p>
+      </div>
+      <div class="foot-col">
+        <h5>Продукт</h5>
+        <a href="#game">Мини-игра «Ночная смена»</a>
+        <a href="#top">Возможности</a>
+        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">Доступ в бету</a>
+      </div>
+      <div class="foot-col">
+        <h5>Документы</h5>
+        <a href="#" data-doc="privacy">Политика обработки ПД</a>
+        <a href="#" data-doc="offer">Публичная оферта</a>
+        <a href="#" data-doc="cookie">Использование cookie</a>
+        <a href="#" data-doc="consent">Согласие на обработку ПД</a>
+      </div>
+    </div>
+    <div class="legal">
+      RentOS обрабатывает персональные данные в соответствии с Федеральным законом №152-ФЗ «О персональных данных». Платёжные операции и фискализация — в соответствии с №54-ФЗ. Информация на сайте не является публичной офертой; состав услуг и условия уточняются индивидуально.
+      <div class="req">
+        <!-- TODO: заполнить реквизиты после регистрации ООО / актуальные данные ИП -->
+        Оператор сервиса: [ИП/ООО «___»] · ИНН [___] · ОГРН(ИП) [___]<br>
+        Контакт: <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">@rentosbetabot</a> · © <span id="year"></span> RentOS. Все права защищены.
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // year
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  // nav solidify on scroll
+  var nav = document.getElementById('nav');
+  function onScroll(){ if(window.scrollY > 40) nav.classList.add('solid'); else nav.classList.remove('solid'); }
+  window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+
+  // stars
+  var starWrap = document.getElementById('stars');
+  if(starWrap){
+    for(var i=0;i<46;i++){
+      var s=document.createElement('div'); s.className='star';
+      s.style.left=(Math.random()*100)+'%'; s.style.top=(Math.random()*100)+'%';
+      s.style.animationDelay=(Math.random()*4)+'s';
+      s.style.width=s.style.height=(Math.random()*2+1.5)+'px';
+      starWrap.appendChild(s);
+    }
+  }
+
+  // phone raining toasts (looping)
+  if(!reduce){
+    var toasts=['t1','t2','t3','t4','t5','t6'].map(function(id){return document.getElementById(id);}).filter(Boolean);
+    toasts.forEach(function(el,idx){ el.style.animation='drop 4.5s '+(idx*0.7)+'s infinite ease-in-out'; });
+  } else {
+    ['t1','t2','t3','t4','t5','t6'].forEach(function(id){var e=document.getElementById(id); if(e) e.style.opacity=1;});
+  }
+
+  // footer doc placeholders
+  Array.prototype.forEach.call(document.querySelectorAll('[data-doc]'), function(a){
+    a.addEventListener('click', function(e){ e.preventDefault();
+      alert('Документ «'+a.textContent+'» — заглушка. Подставь сюда ссылку на готовый PDF/страницу.'); });
+  });
+
+  // ----- Личный кабинет -----
+  // TODO: замени на реальный URL личного кабинета (фронтенд на Vercel)
+  var CABINET_URL = 'https://app.rentos.ru/login';
+  Array.prototype.forEach.call(document.querySelectorAll('[data-cabinet]'), function(a){
+    a.setAttribute('href', CABINET_URL);
+  });
+
+  // ----- ИИ-приёмка уборки: анимация при скролле -----
+  var checkpane = document.getElementById('checkpane');
+  if(checkpane){
+    var lines = Array.prototype.slice.call(checkpane.querySelectorAll('.cline'));
+    var verdict = document.getElementById('verdict');
+    function revealLines(){
+      if(reduce){ lines.forEach(function(l){l.classList.add('done');}); verdict.classList.add('show'); return; }
+      lines.forEach(function(l,i){ setTimeout(function(){ l.classList.add('done'); }, 350 + i*520); });
+      setTimeout(function(){ verdict.classList.add('show'); }, 350 + lines.length*520 + 250);
+    }
+    if('IntersectionObserver' in window){
+      var io=new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if(en.isIntersecting){ revealLines(); io.disconnect(); } });
+      },{threshold:.4});
+      io.observe(checkpane);
+    } else { revealLines(); }
+  }
+
+  /* ============ GAME ============ */
+  var TASKS = [
+    {ico:'🔑', tx:'Код от замка не работает', money:0,  icobg:'rgba(245,165,36,.15)'},
+    {ico:'💬', tx:'«Во сколько заселение?»',  money:0,  icobg:'rgba(91,124,222,.18)'},
+    {ico:'🛂', tx:'Паспорт на проверку',       money:0,  icobg:'rgba(245,165,36,.15)'},
+    {ico:'💸', tx:'Вернуть депозит 5 000 ₽',   money:5000,icobg:'rgba(226,75,74,.15)'},
+    {ico:'🧹', tx:'Горничная не подтвердила',  money:0,  icobg:'rgba(47,179,68,.15)'},
+    {ico:'📅', tx:'Новое бронирование',        money:0,  icobg:'rgba(91,124,222,.18)'},
+    {ico:'⭐', tx:'Гость просит поздний выезд', money:0,  icobg:'rgba(245,165,36,.15)'},
+    {ico:'🛏', tx:'Поменять бельё к заезду',   money:0,  icobg:'rgba(91,124,222,.18)'},
+    {ico:'📸', tx:'Гость жалуется на фото',     money:2400,icobg:'rgba(226,75,74,.15)'},
+    {ico:'🚪', tx:'Гость уехал, не закрыл',     money:0,  icobg:'rgba(245,165,36,.15)'},
+    {ico:'📷', tx:'Проверить уборку по фото',    money:0,  icobg:'rgba(47,179,68,.15)'},
+    {ico:'🔋', tx:'Замок разрядился',            money:0,  icobg:'rgba(245,165,36,.15)'}
+  ];
+
+  var board   = document.getElementById('board');
+  var ovStart = document.getElementById('ov-start');
+  var ovEnd   = document.getElementById('ov-end');
+  var shell   = document.getElementById('shell');
+  var calm    = document.getElementById('calm');
+  var mNerve=document.getElementById('m-nerve'), mHappy=document.getElementById('m-happy'),
+      mLost=document.getElementById('m-lost'),   mMoney=document.getElementById('m-money');
+
+  var state, spawnTimer, tickTimer, cards;
+
+  function reset(){
+    state={nerve:100, happy:0, lost:0, money:0, running:false, elapsed:0, spawnEvery:1400};
+    cards=[];
+    paint();
+  }
+  function paint(){
+    mNerve.textContent = Math.max(0,Math.round(state.nerve))+'%';
+    mHappy.textContent = state.happy;
+    mLost.textContent  = state.lost;
+    mMoney.textContent = state.money.toLocaleString('ru-RU')+' ₽';
+  }
+
+  function spawn(){
+    if(!state.running) return;
+    if(cards.length >= 9){ return; } // board full -> overwhelm, just keep timers running
+    var def = TASKS[Math.floor(Math.random()*TASKS.length)];
+    var ttl = Math.max(2200, 5200 - state.elapsed*60); // gets harder
+    var el = document.createElement('div');
+    el.className='gcard';
+    el.innerHTML='<div class="row"><span class="gico">'+def.ico+'</span><span class="gtx">'+def.tx+'</span></div>'+
+                 '<div class="bar"><i></i></div><span class="check">✓</span>';
+    var bar = el.querySelector('.bar i');
+    var card = {el:el, bar:bar, born:Date.now(), ttl:ttl, def:def, resolved:false, dead:false};
+    el.addEventListener('click', function(){
+      if(card.resolved||card.dead) return;
+      card.resolved=true; el.classList.add('resolved');
+      state.happy++; state.nerve=Math.min(100,state.nerve+1.5);
+      paint();
+      setTimeout(function(){ removeCard(card); }, 320);
+    });
+    board.appendChild(el); cards.push(card);
+  }
+
+  function removeCard(card){
+    var i=cards.indexOf(card); if(i>-1) cards.splice(i,1);
+    if(card.el && card.el.parentNode) card.el.parentNode.removeChild(card.el);
+  }
+
+  function tick(){
+    if(!state.running) return;
+    state.elapsed += 0.1;
+    // spawn pacing
+    state.spawnEvery = Math.max(550, 1400 - state.elapsed*45);
+    var now=Date.now();
+    for(var i=cards.length-1;i>=0;i--){
+      var c=cards[i]; if(c.resolved||c.dead) continue;
+      var pct = 1 - (now-c.born)/c.ttl;
+      if(pct<=0){
+        // expired
+        c.dead=true; c.el.style.opacity='0'; c.el.style.transform='scale(.9)';
+        state.lost++; state.money+=c.def.money; state.nerve-=9;
+        paint();
+        (function(cc){ setTimeout(function(){ removeCard(cc); },300); })(c);
+      } else {
+        c.bar.style.width=(pct*100)+'%';
+        if(pct<0.35) c.el.classList.add('urgent');
+      }
+    }
+    if(state.nerve<=0 || state.elapsed>=30){ endGame(); }
+  }
+
+  var lastSpawn=0;
+  function loop(){
+    if(!state.running) return;
+    var now=Date.now();
+    if(now-lastSpawn >= state.spawnEvery){ spawn(); lastSpawn=now; }
+    requestAnimationFrame(loop);
+  }
+
+  function startGame(){
+    reset(); state.running=true;
+    ovStart.classList.remove('show'); ovEnd.classList.remove('show');
+    calm.classList.remove('show');
+    // clear leftover cards
+    Array.prototype.forEach.call(board.querySelectorAll('.gcard'), function(n){n.remove();});
+    cards=[];
+    lastSpawn=0;
+    tickTimer=setInterval(tick,100);
+    spawn(); spawn();
+    requestAnimationFrame(loop);
+  }
+
+  function endGame(){
+    state.running=false;
+    clearInterval(tickTimer);
+    var title, sub;
+    if(state.nerve<=0){ title='Ты выгорел.'; sub='Нервы кончились раньше брони. Так и происходит, когда ресепшен, бухгалтерия и охрана — это один человек. Ты.'; }
+    else { title='Смена окончена.'; sub='Ты держался 30 секунд. А смена длится круглосуточно, без выходных. В одиночку всё не успеть — это математика, а не лень.'; }
+    document.getElementById('end-title').textContent=title;
+    document.getElementById('end-sub').textContent=sub;
+    document.getElementById('end-score').innerHTML=
+      'Довольных гостей: <b>'+state.happy+'</b><br>'+
+      'Потеряно гостей: <b class="red">'+state.lost+'</b><br>'+
+      'Упущено денег: <b class="red">'+state.money.toLocaleString('ru-RU')+' ₽</b>';
+    ovEnd.classList.add('show');
+  }
+
+  function runRentOS(){
+    ovEnd.classList.remove('show');
+    // turn the board calm (night -> light)
+    shell.style.background='#FFFFFF';
+    shell.style.borderColor='var(--line-strong)';
+    // auto-resolve any remaining cards with green checks, sequentially
+    var remaining = cards.slice();
+    // also drop a few fresh ones to "resolve" for effect if board nearly empty
+    var demo = remaining.length;
+    var idx=0;
+    function step(){
+      if(idx>=remaining.length){
+        // when done, show calm line + scroll hint
+        calm.classList.add('show');
+        return;
+      }
+      var c=remaining[idx]; idx++;
+      if(c.el && c.el.parentNode){ c.resolved=true; c.el.classList.add('resolved'); }
+      setTimeout(step, 220);
+    }
+    if(remaining.length===0){ calm.classList.add('show'); }
+    else { step(); }
+    // stop timers
+    state.running=false; clearInterval(tickTimer);
+  }
+
+  document.getElementById('btn-start').addEventListener('click', startGame);
+  document.getElementById('btn-rentos').addEventListener('click', runRentOS);
+
+  reset();
+})();
+</script>
+</body>
+</html>
