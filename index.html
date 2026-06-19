@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RentOS — посуточная аренда на автопилоте</title>
-<meta name="description" content="RentOS заселяет гостей, проверяет паспорта, выдаёт коды от замков, отвечает в чате и возвращает депозиты — пока ты спишь.">
+<title>RentOS — операционная система, которая думает как собственник бизнеса в интересах чистой прибыли</title>
+<meta name="description" content="RentOS берёт на себя грязную работу — заселение, паспорта, коды от замков, чаты, депозиты, уборки и конфликты. А ты занимаешься чистой прибылью.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
@@ -26,6 +26,7 @@
   body{font-family:var(--body);color:var(--ink);background:var(--paper);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
   a{color:inherit;text-decoration:none}
   .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
+  button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
   .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;font-weight:500}
 
   /* ---- buttons ---- */
@@ -128,10 +129,9 @@
   .meter .red{color:var(--danger)}
   .meter .grn{color:var(--success)}
 
-  .board{position:relative;height:380px;padding:14px;display:grid;
-    grid-template-columns:repeat(3,1fr);grid-auto-rows:min-content;gap:10px;align-content:start;overflow:hidden}
-  .gcard{background:var(--midnight-2);border:1px solid var(--night-line);border-radius:14px;padding:12px;cursor:pointer;
-    user-select:none;position:relative;animation:pop .25s ease;transition:opacity .3s, transform .3s}
+  .board{position:relative;height:400px;overflow:hidden}
+  .gcard{position:absolute;width:210px;background:var(--midnight-2);border:1px solid var(--night-line);border-radius:14px;padding:12px;cursor:pointer;
+    user-select:none;touch-action:manipulation;animation:pop .25s ease;transition:opacity .3s, transform .3s;z-index:2}
   .gcard:hover{border-color:var(--primary-hi)}
   @keyframes pop{from{opacity:0;transform:scale(.9)}to{opacity:1;transform:scale(1)}}
   .gcard .row{display:flex;gap:9px;align-items:flex-start}
@@ -223,26 +223,29 @@
   .spotlight p b{color:var(--night-ink);font-weight:600}
   .spotlight .who{font-family:var(--mono);font-size:12px;color:var(--primary-hi);letter-spacing:.05em;position:relative}
 
-  .checkpane{background:#0A0F1E;border:1px solid var(--night-line);border-radius:18px;padding:20px;position:relative}
-  .checkpane .ph{display:flex;align-items:center;justify-content:space-between;font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-bottom:16px}
-  .checkpane .ai-on{color:var(--primary-hi);display:inline-flex;gap:7px;align-items:center}
-  .checkpane .ai-on .d{width:7px;height:7px;border-radius:50%;background:var(--primary-hi);animation:ping 1.6s infinite}
-  .cline{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:11px;background:var(--night-card);margin-bottom:9px;
-    opacity:.22;transform:translateX(-8px);transition:opacity .45s ease,transform .45s ease}
-  .cline.done{opacity:1;transform:none}
-  .cline .cmark{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:13px;font-weight:700;flex:0 0 auto;
-    background:rgba(47,179,68,.16);color:var(--success)}
-  .cline.fail .cmark{background:rgba(226,75,74,.16);color:var(--danger)}
-  .cline .ctx{font-size:13.5px;color:var(--night-ink)}
-  .cline.fail .ctx{color:var(--night-sub)}
-  .verdict{margin-top:14px;font-family:var(--mono);font-size:12.5px;line-height:1.5;padding:12px 14px;border-radius:11px;
-    background:rgba(245,165,36,.1);border:1px solid rgba(245,165,36,.32);color:var(--warn);opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
+  .checkpane{background:#fff;border:1px solid #ECEEF3;border-radius:18px;padding:18px;position:relative;box-shadow:0 18px 50px rgba(16,24,40,.3)}
+  .checkpane .ph{display:flex;align-items:center;justify-content:space-between;font-size:12.5px;color:#888;margin-bottom:14px}
+  .checkpane .ai-on{display:inline-flex;gap:7px;align-items:center;font-size:11px;font-weight:600;color:#5B7CDE;background:#eef2ff;border-radius:20px;padding:4px 10px}
+  .checkpane .ai-on .d{width:7px;height:7px;border-radius:50%;background:#5B7CDE;animation:ping 1.6s infinite}
+  .cline{display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;background:#f6f7f9;margin-bottom:8px;
+    opacity:.3;transform:translateX(-8px);transition:opacity .45s ease,transform .45s ease,background .45s ease}
+  .cline.done{opacity:1;transform:none;background:#f1f8e9}
+  .cline.fail.done{background:#ffebee}
+  .cline .cmark{width:22px;height:22px;border-radius:6px;display:grid;place-items:center;font-size:13px;font-weight:700;flex:0 0 auto;
+    background:#e8f5e9;color:#2e7d32}
+  .cline.fail .cmark{background:#ffebee;color:#c62828}
+  .cline .ctx{font-size:13.5px;color:#333;font-weight:500}
+  .cline.fail .ctx{color:#c62828}
+  .cline .st{margin-left:auto;font-size:10.5px;font-weight:700;color:#2e7d32;white-space:nowrap}
+  .cline.fail .st{color:#c62828}
+  .verdict{margin-top:12px;font-size:12.5px;line-height:1.5;padding:12px 14px;border-radius:11px;
+    background:#fff8e1;border:1px solid #ffe082;color:#e65100;opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
   .verdict.show{opacity:1;transform:none}
 
-  .ai-mini{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:22px}
+  .ai-mini{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:22px}
   .amini{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:26px;
     box-shadow:0 1px 2px rgba(16,24,40,.04),0 12px 32px rgba(16,24,40,.06)}
-  .amini .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:var(--primary);text-transform:uppercase;margin-bottom:12px}
+  .amini .tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;color:#3D5AF1;font-weight:700;text-transform:uppercase;margin-bottom:12px}
   .amini .afico{width:44px;height:44px;border-radius:12px;background:rgba(91,124,222,.1);display:grid;place-items:center;font-size:20px;margin-bottom:16px}
   .amini h4{font-size:17px;font-weight:700;color:var(--ink);margin-bottom:8px}
   .amini p{font-size:14px;color:var(--sub);line-height:1.55}
@@ -265,6 +268,98 @@
   .members a{display:inline-flex;align-items:center;gap:7px;color:var(--primary-hi);font-weight:600}
   .members a svg{width:14px;height:14px}
 
+  /* ================= FOUNDER ================= */
+  .founder{background:var(--paper);padding:92px 0;border-top:1px solid var(--line)}
+  .founder .wrap{max-width:900px}
+  .founder .eyebrow{color:var(--primary);display:block;margin-bottom:22px}
+  .founder blockquote{margin:0;font-family:var(--body);font-weight:500;font-size:clamp(21px,2.7vw,30px);
+    line-height:1.4;letter-spacing:-.01em;color:var(--ink);border-left:3px solid var(--primary);padding-left:28px}
+  .founder blockquote em{font-style:normal;color:var(--primary);font-weight:700}
+  .founder-by{display:flex;align-items:center;gap:14px;margin-top:30px;padding-left:31px}
+  .founder-by .avatar{width:50px;height:50px;border-radius:50%;flex:0 0 auto;
+    background:linear-gradient(135deg,var(--primary),var(--primary-hi));box-shadow:0 6px 18px rgba(91,124,222,.3)}
+  .founder-by .by-text b{display:block;color:var(--ink);font-size:15px;line-height:1.3}
+  .founder-by .by-text span{font-size:13px;color:var(--sub)}
+
+  /* ================= FLOW DEMO (automation) ================= */
+  .flowdemo{margin-top:40px;background:#fff;border:1px solid #ECEEF3;border-radius:18px;
+    padding:24px;box-shadow:0 18px 50px rgba(16,24,40,.3)}
+  .flow-head{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:#888;margin-bottom:16px}
+  .flow-head .ai-on{display:inline-flex;gap:7px;align-items:center;font-size:11px;font-weight:600;color:#5B7CDE;background:#eef2ff;border-radius:20px;padding:4px 10px}
+  .flow-head .ai-on .d{width:7px;height:7px;border-radius:50%;background:#5B7CDE;animation:ping 1.6s infinite}
+  .rule-input{background:#f6f7f9;border:1px solid #ECEEF3;border-radius:12px;padding:14px 16px;
+    color:#1B2130;font-size:14px;line-height:1.45;margin-bottom:14px;position:relative}
+  .rule-input::before{content:'ты пишешь словами';position:absolute;top:-9px;left:14px;font-family:var(--mono);
+    font-size:9.5px;letter-spacing:.06em;color:#9AA3B2;background:#fff;padding:0 6px}
+  .rule-parse{display:flex;flex-wrap:wrap;gap:8px;align-items:center;min-height:30px;margin-bottom:14px}
+  .chip-think{font-family:var(--mono);font-size:11px;color:#888;background:#f5f5f5;border-radius:8px;padding:6px 10px;transition:opacity .3s}
+  .chip-think.gone{opacity:0;display:none}
+  .pchip{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:600;border-radius:99px;
+    padding:6px 11px;background:#e3f2fd;color:#1565c0;border:1px solid #bbdefb;
+    opacity:0;transform:translateY(4px) scale(.96);transition:opacity .35s ease,transform .35s ease}
+  .pchip.show{opacity:1;transform:none}
+  .pchip.cond{background:#ede7f6;color:#5e35b1;border-color:#d1c4e9}
+  .pchip.time{background:#eef2ff;color:#5B7CDE;border-color:#c7d2fe}
+  .pchip.warn{background:#ffebee;color:#c62828;border-color:#ffcdd2}
+  .rule-msg{background:#f6f7f9;border:1px solid #ECEEF3;border-radius:12px;padding:13px 15px;
+    font-size:13px;color:#555;line-height:1.55}
+  .rule-msg b{color:#5B7CDE;font-weight:600}
+  .rule-msg .msg-note{display:block;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:#9AA3B2}
+  .flow-foot{margin-top:18px;font-size:13.5px;color:var(--night-ink);text-align:center}
+  .flow-foot b{color:var(--primary-hi)}
+
+  /* ================= TRY DEMO (late checkout, RentOS UI) ================= */
+  .trydemo{background:var(--paper);padding:96px 0 44px}
+  .trydemo .eyebrow{color:var(--primary)}
+  .trydemo .sec-head{margin:0 auto 44px;text-align:center;max-width:640px}
+  .trydemo h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,44px);color:var(--ink);letter-spacing:-.02em;margin:14px 0 16px}
+  .trydemo .sec-head p{color:var(--sub);font-size:18px}
+  .demo-stage{max-width:520px;margin:0 auto}
+  .demo-card{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--warn);border-radius:18px;
+    padding:24px;box-shadow:0 1px 2px rgba(16,24,40,.04),0 18px 44px rgba(16,24,40,.1)}
+  .dc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}
+  .dc-title{font-weight:700;font-size:17px;color:var(--ink)}
+  .dc-tag{font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;background:#FFF3E0;color:#E65100;white-space:nowrap}
+  .dc-guest{font-size:13px;color:#1565C0;margin-bottom:18px}
+  .dc-row{display:flex;align-items:center;justify-content:space-between;padding:13px 14px;border:1px solid var(--line);border-radius:12px;margin-bottom:14px}
+  .dc-label{font-size:14px;color:var(--sub)}
+  .dc-time{font-family:var(--mono);font-weight:700;font-size:16px;color:var(--ink);transition:color .2s}
+  .dc-time.changed{color:var(--warn)}
+  .lc-charges{display:none;margin-bottom:14px}
+  .lc-charges.show{display:block}
+  .lc-charge{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-radius:12px;
+    background:rgba(47,179,68,.08);border:1px solid rgba(47,179,68,.3);font-size:14px;color:var(--ink)}
+  .lc-charge b{color:var(--success)}
+  .lc-tip{display:none;flex-direction:column;align-items:flex-start;gap:12px;background:#FFF3E0;border:1px solid #FFB74D;border-radius:12px;padding:14px 16px;margin-bottom:14px}
+  .lc-tip.show{display:flex;animation:tipin .35s ease}
+  @keyframes tipin{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
+  .lc-tip.done{background:rgba(47,179,68,.1);border-color:rgba(47,179,68,.45)}
+  .lc-tip-txt{font-size:13.5px;line-height:1.45;color:#E65100;font-weight:500}
+  .lc-tip.done .lc-tip-txt{color:#1b7a2e}
+  .lc-tip-btn{align-self:flex-start;background:var(--warn);color:#fff;border:none;border-radius:10px;padding:9px 16px;font-size:13.5px;font-weight:600;cursor:pointer;font-family:var(--body);transition:opacity .15s}
+  .lc-tip-btn:hover{opacity:.9}
+  .lc-tip.done .lc-tip-btn{display:none}
+  .demo-action{width:100%;height:48px;border:none;border-radius:12px;background:var(--primary);color:#fff;font-family:var(--body);font-weight:600;font-size:15px;cursor:pointer;transition:opacity .15s,background .15s}
+  .demo-action:hover{background:var(--primary-hover)}
+  .demo-action.spent{display:none}
+  .demo-reset{display:none;width:100%;margin-top:6px;background:none;border:none;color:var(--primary);font-family:var(--body);font-size:13px;font-weight:600;cursor:pointer;padding:8px}
+  .demo-reset.show{display:block}
+  .demo-note{text-align:center;color:var(--sub);font-size:14px;margin-top:22px;line-height:1.5}
+
+  /* ================= ALL-IN (что ещё внутри) ================= */
+  .allin{background:var(--paper);padding:24px 0 92px}
+  .allin .eyebrow{color:var(--primary)}
+  .allin .sec-head{margin:0 auto 40px;text-align:center;max-width:660px}
+  .allin h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,44px);color:var(--ink);letter-spacing:-.02em;margin:14px 0 16px}
+  .allin .sec-head p{color:var(--sub);font-size:18px}
+  .allin-group{margin-bottom:26px}
+  .allin-group h3{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 14px 2px}
+  .allin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .aitem{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  .aitem .ai-ic{font-size:20px;flex:0 0 auto;line-height:1.2}
+  .aitem .ai-t b{display:block;color:var(--ink);font-size:14px;font-weight:600;margin-bottom:3px}
+  .aitem .ai-t span{font-size:12.5px;color:var(--sub);line-height:1.45}
+
   /* ================= RESPONSIVE ================= */
   @media(max-width:920px){
     .hero-grid{grid-template-columns:1fr;gap:48px}
@@ -274,13 +369,15 @@
     .anchor{grid-template-columns:1fr;padding:40px 28px}
     .foot-grid{grid-template-columns:1fr 1fr}
     .spotlight{grid-template-columns:1fr;padding:40px 28px}
-    .ai-mini{grid-template-columns:1fr}
+    .ai-mini{grid-template-columns:repeat(2,1fr)}
+    .allin-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:600px){
     .hero{padding:130px 0 80px}
     .stats{grid-template-columns:1fr 1fr}
     .feats{grid-template-columns:1fr}
-    .board{grid-template-columns:repeat(2,1fr);height:430px}
+    .board{height:460px}
+    .gcard{width:150px;padding:10px}
     .meters{gap:14px;font-size:11px}
     .anchor{padding:32px 22px}
     .final-card{padding:48px 24px}
@@ -289,10 +386,56 @@
     .nav-login span{display:none}
     .nav-login{padding:0 11px}
     .spotlight{padding:32px 22px}
+    .founder blockquote{padding-left:18px}
+    .founder-by{padding-left:21px}
+    .ai-mini{grid-template-columns:1fr}
+    .allin-grid{grid-template-columns:1fr}
+    .frow{grid-template-columns:1fr;gap:6px}
+    .frow .arr{display:none}
+    .frow .sent{justify-self:start}
+    /* --- плотная мобильная адаптация --- */
+    .wrap{padding:0 18px}
+    .trust{padding:64px 0 84px}
+    .game{padding:56px 0 64px}
+    .ai{padding:60px 0 8px}
+    .founder{padding:56px 0}
+    .trydemo{padding:54px 0 32px}
+    .sale{padding:56px 0 40px}
+    .allin{padding:16px 0 56px}
+    .final{padding:56px 0 64px}
+    .sec-head{margin-bottom:30px}
+    .game .sec-head,.sale .sec-head,.ai .sec-head,.trydemo .sec-head,.allin .sec-head{margin-bottom:28px}
+    .sec-head p,.sale .sec-head p,.ai .sec-head p,.trydemo .sec-head p,.allin .sec-head p{font-size:16px}
+    .stat{padding:20px 16px}
+    .stat .num{font-size:30px}
+    .stat .lbl{font-size:13px;margin-top:8px}
+    .spotlight{padding:26px 18px;gap:22px;border-radius:22px}
+    .checkpane{padding:14px}
+    .flowdemo{padding:18px}
+    .rule-input{font-size:13px;padding:13px 14px}
+    .rule-msg{font-size:12.5px}
+    .demo-card{padding:18px}
+    .demo-note{font-size:13px}
+    .gcard .gtx{font-size:11.5px}
+    .board-overlay p{font-size:14px}
+    .founder blockquote{font-size:20px}
+    .final-card p{font-size:16px}
+    .aitem{padding:14px 15px}
+  }
+  @media(max-width:400px){
+    .wrap{padding:0 15px}
+    .stat .num{font-size:26px}
+    .gcard{padding:10px}
+    .gcard .gtx{font-size:11px}
   }
   @media(prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important;scroll-behavior:auto!important}
-    .star{opacity:.3}
+    html{scroll-behavior:auto!important}
+    /* гасим только декоративную бесконечную анимацию, демо и игра продолжают работать */
+    .star{animation:none!important;opacity:.3}
+    .marquee .track{animation:none!important}
+    .board-top .live .pulse,.ai-on .d,.flow-head .ai-on .d{animation:none!important}
+    .spotlight .glowdot{animation:none!important}
+    [id^="t"].toast{animation:none!important}
   }
 </style>
 </head>
@@ -305,7 +448,7 @@
     <div class="nav-actions">
       <a href="#" data-cabinet class="nav-login" title="Личный кабинет">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-        <span>Войти</span>
+        <span>Войти в личный кабинет</span>
       </a>
       <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-primary nav-cta">Получить доступ</a>
     </div>
@@ -319,12 +462,12 @@
     <div>
       <div class="clock"><span class="pulse"></span> 03:14 · ВТОРНИК · ТЕБЕ ПИШЕТ ГОСТЬ</div>
       <h1>Гость не может войти<br>в квартиру.<br><span class="em">Угадай, кто проснулся.</span></h1>
-      <p class="lead">Ты. Снова. А <b>RentOS</b> заселяет гостей, проверяет паспорта, выдаёт коды от замков, отвечает в чате и возвращает депозиты. Круглосуточно. Без тебя.</p>
+      <p class="lead">Ты, конечно. Кто ещё по ночам разбирается с паспортами, договорами, оплатами и кодами от замков? <b>RentOS</b> сделает это за тебя — потому что знает цену сорванного заселения. Это твои деньги, и он их не упустит.</p>
       <div class="hero-actions">
         <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Забрать своё время →</a>
         <a href="#game" class="btn btn-ghost">Прожить смену вручную</a>
       </div>
-      <div class="hero-note">// для профессиональных операторов посуточной аренды</div>
+      <div class="hero-note">// для профессиональных участников рынка посуточной аренды</div>
     </div>
     <div>
       <div class="phone" aria-hidden="true">
@@ -334,7 +477,7 @@
           <div class="toast" id="t2" style="top:104px"><div class="ico" style="background:rgba(91,124,222,.18)">💬</div><div class="tx">«Во сколько заселение?»<small>гость, 03:21</small></div></div>
           <div class="toast" id="t3" style="top:170px"><div class="ico" style="background:rgba(226,75,74,.15)">💸</div><div class="tx">Вернуть депозит 5 000 ₽<small>выезд, 03:40</small></div></div>
           <div class="toast" id="t4" style="top:236px"><div class="ico" style="background:rgba(47,179,68,.15)">🧹</div><div class="tx">Горничная не подтвердила<small>уборка завтра</small></div></div>
-          <div class="toast" id="t5" style="top:302px"><div class="ico" style="background:rgba(91,124,222,.18)">📅</div><div class="tx">Новое бронирование<small>RealtyCalendar</small></div></div>
+          <div class="toast" id="t5" style="top:302px"><div class="ico" style="background:rgba(91,124,222,.18)">📅</div><div class="tx">Новое бронирование<small>Авито</small></div></div>
           <div class="toast" id="t6" style="top:368px"><div class="ico" style="background:rgba(245,165,36,.15)">🛂</div><div class="tx">Паспорт на проверку<small>заселение через 1 ч</small></div></div>
         </div>
       </div>
@@ -345,7 +488,7 @@
 <!-- MARQUEE -->
 <div class="marquee" aria-hidden="true">
   <div class="track">
-    <span>YandexGPT <b>·</b> Yandex Vision OCR <b>·</b> RealtyCalendar <b>·</b> amoCRM <b>·</b> Wazzup <b>·</b> Tuya <b>·</b> TT&nbsp;Lock <b>·</b> T-Bank <b>·</b> СБП <b>·</b> онлайн-касса 54-ФЗ <b>·</b> YandexGPT <b>·</b> Yandex Vision OCR <b>·</b> RealtyCalendar <b>·</b> amoCRM <b>·</b> Wazzup <b>·</b> Tuya <b>·</b> TT&nbsp;Lock <b>·</b> T-Bank <b>·</b> СБП <b>·</b> онлайн-касса 54-ФЗ <b>·</b></span>
+    <span>Самозаселение 24/7 <b>·</b> Умные замки <b>·</b> Проверка паспортов <b>·</b> ИИ-разрешение конфликтов <b>·</b> ИИ-приёмка уборки <b>·</b> Онлайн-касса 54-ФЗ <b>·</b> Оплаты по СБП <b>·</b> Депозиты холдом <b>·</b> Синхронизация календарей <b>·</b> Соблюдение 152-ФЗ <b>·</b> Подписание договора с ПЭП <b>·</b> Самозаселение 24/7 <b>·</b> Умные замки <b>·</b> Проверка паспортов <b>·</b> ИИ-разрешение конфликтов <b>·</b> ИИ-приёмка уборки <b>·</b> Онлайн-касса 54-ФЗ <b>·</b> Оплаты по СБП <b>·</b> Депозиты холдом <b>·</b> Синхронизация календарей <b>·</b> Соблюдение 152-ФЗ <b>·</b> Подписание договора с ПЭП <b>·</b> </span>
   </div>
 </div>
 
@@ -353,24 +496,33 @@
 <section class="trust">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Не обещания. Функции.</div>
+      <div class="eyebrow">Только то, что реально работает</div>
       <h2>Что система забирает себе</h2>
-      <p>Это не «помощник» и не чат-бот. Это операционный слой, который реально делает работу — а не советует, как её сделать.</p>
+      <p>Это не «помощник» и не чат-бот. Это операционный слой, который сам выполняет задачи, а не присылает тебе уведомления о них.</p>
     </div>
     <div class="stats">
-      <div class="stat"><div class="num">24/7</div><div class="lbl">Заселение и ответы гостям без твоего участия</div></div>
-      <div class="stat"><div class="num">0</div><div class="lbl">ключей из рук в руки — код от умного замка вместо встречи</div></div>
-      <div class="stat"><div class="num">AES-256</div><div class="lbl">шифрование паспортных данных гостей</div></div>
+      <div class="stat"><div class="num">24/7</div><div class="lbl">Самозаселение гостей в любое время, без твоего участия</div></div>
+      <div class="stat"><div class="num">0</div><div class="lbl">ключей из рук в руки. Для электронных замков код генерируется автоматически, для сейф-боксов — хранится и не теряется. Свой код каждому гостю и горничной</div></div>
+      <div class="stat"><div class="num">152-ФЗ</div><div class="lbl">паспорта гостей под надёжным шифрованием по закону о персональных данных</div></div>
       <div class="stat"><div class="num">&lt;60 сек</div><div class="lbl">от брони до отправленного гостю договора и инструкции</div></div>
     </div>
     <div class="badges">
-      <div class="badge">Построен под <b>152-ФЗ</b> · хранение ПД</div>
+      <div class="badge">Хранение <b>персональных данных</b></div>
       <div class="badge">Онлайн-касса <b>54-ФЗ</b> в комплекте</div>
-      <div class="badge">Депозиты через <b>холд карты</b></div>
-      <div class="badge">Договор + селфи + <b>SHA-256</b> подпись</div>
-      <div class="badge">Архив договоров <b>3 года</b>, авто-удаление</div>
-      <div class="badge">Изоляция данных <b>по тенантам</b></div>
+      <div class="badge">Возвратные депозиты — <b>без комиссии</b></div>
+      <div class="badge">Договор + селфи · <b>защита от подделки</b></div>
+      <div class="badge">Храним договоры <b>3 года</b></div>
+      <div class="badge">Команда в системе — у каждого <b>свой доступ по ролям</b></div>
+      <div class="badge">Код от сейф-бокса <b>не теряется в чатах</b></div>
     </div>
+  </div>
+</section>
+
+<!-- FOUNDER -->
+<section class="founder">
+  <div class="wrap">
+    <div class="eyebrow">Кто за этим стоит</div>
+    <blockquote>RentOS не игрушка айтишников, которые <em>пороху не нюхали</em>. Его строит тот, кто сам сдаёт квартиры и сам терял деньги на каждой дыре в процессе. Каждая функция выстрадана на живых гостях, конфликтах и <em>потерянных деньгах</em>, а не придумана на созвоне.</blockquote>
   </div>
 </section>
 
@@ -378,9 +530,9 @@
 <section class="game" id="game">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Вовлечение · мини-игра</div>
-      <h2>Прими ночную смену</h2>
-      <p class="sub">8 квартир. Сейчас 03:14. Задачи будут сыпаться. Успей по каждой кликнуть, пока таймер не сгорел. Это просто. Наверное.</p>
+      <div class="eyebrow">Мини-игра</div>
+      <h2>Прими ночную смену в пятницу вечером</h2>
+      <p class="sub">Восемь квартир, 03:14, и всё разом требует тебя. Жми на задачи, пока таймер не сгорел — и посмотри, сколько продержишься.</p>
     </div>
 
     <div class="board-shell" id="shell">
@@ -406,7 +558,7 @@
         </div>
       </div>
     </div>
-    <div class="calm-line" id="calm">// RentOS закрыл все задачи сам. Ты просто спал.</div>
+    <div class="calm-line" id="calm">// RentOS закрыл все задачи сам. Ты отдыхал ночью.</div>
   </div>
 </section>
 
@@ -414,50 +566,101 @@
 <section class="ai" id="ai">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">ИИ внутри · YandexGPT + Vision</div>
-      <h2>Искусственный интеллект, который работает руками</h2>
-      <p>Не «спросите у ассистента». ИИ сам проверяет, распознаёт и отвечает — и зовёт тебя, только когда правда нужен человек.</p>
+      <div class="eyebrow">ИИ внутри</div>
+      <h2>ИИ принимает уборку, ловит враньё гостей и считает твои деньги</h2>
+      <p>Не подсказывает, а делает сам. Назначает горничных, проверяет уборку и заворачивает халтуру, видит в переписке, где гость манипулирует, распознаёт паспорта на входе. Зовёт, когда решать правда тебе.</p>
     </div>
 
     <div class="spotlight">
       <div class="glowdot" aria-hidden="true"></div>
       <div>
-        <div class="killer">★ Киллер-фича</div>
-        <h3>ИИ-приёмка уборки по фото</h3>
-        <p>Горничная закончила и прислала фото. <b>ИИ-зрение сверяет каждую зону</b> с эталоном квартиры: кровати, санузел, мусор, полотенца, кухня. Чисто — задача закрывается. Нет — возвращается на доработку с конкретным замечанием.</p>
-        <p>Ты не едешь через весь город проверять уборку. И гость не заезжает в грязь — потому что ИИ поймал это раньше тебя.</p>
+        <div class="killer">★ Киллер-оффер</div>
+        <h3>ИИ-приёмка уборки</h3>
+        <p>Горничная закончила и прислала отчёт. <b>ИИ-зрение сверяет каждую зону</b> и заполняет чек-лист. Чисто — задача закрывается. Нет — возвращается на доработку с конкретным замечанием. И так, пока весь чек-лист не закрыт: ИИ не слезет с горничной, пока уборка не доведена до конца.</p>
+        <p>Ты не едешь через весь город проверять уборку. И не полагаешься на лояльного супервайзера, ИИ не закрывает глаза и проверяет каждую уборку одинаково строго.</p>
         <div class="who">// до заезда гостя · без твоего участия</div>
       </div>
       <div class="checkpane" id="checkpane">
-        <div class="ph"><span>Кв. на Тверской · приёмка</span><span class="ai-on"><span class="d"></span>ИИ проверяет</span></div>
-        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Кровати заправлены</span></div>
-        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Санузел вымыт</span></div>
-        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Мусор вынесен</span></div>
-        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Полотенца заменены</span></div>
-        <div class="cline fail" data-fail><span class="cmark">✕</span><span class="ctx">Посуда не убрана на кухне</span></div>
-        <div class="verdict" id="verdict">ИИ: уборка не принята. Горничной отправлено 1 замечание. Гость заехал бы на грязную кухню — ты бы об этом не узнал.</div>
+        <div class="ph"><span>Кв. на Тверской · приёмка уборки</span><span class="ai-on"><span class="d"></span>ИИ-приёмка</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Кровати заправлены</span><span class="st">принято</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Санузел чистый без биопятен</span><span class="st">принято</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Мусора нет, мусорный пакет заправлен</span><span class="st">принято</span></div>
+        <div class="cline" data-ok><span class="cmark">✓</span><span class="ctx">Полотенца заменены</span><span class="st">принято</span></div>
+        <div class="cline fail" data-fail><span class="cmark">✕</span><span class="ctx">Посуда не убрана на кухне</span><span class="st">переделать</span></div>
+        <div class="verdict" id="verdict">ИИ: уборка не принята. Горничной отправлено 1 замечание. Гость заехал бы на грязную кухню — ты бы узнал об этом в отзыве.</div>
       </div>
     </div>
 
     <div class="ai-mini">
       <div class="amini">
         <div class="afico">💬</div>
-        <div class="tag">YandexGPT</div>
-        <h4>ИИ-переписка с гостем</h4>
-        <p>Отвечает на вопросы живым языком: время заезда, как пройти, парковка, поздний выезд. Тебе доходит только то, что требует решения человека.</p>
+        <div class="tag">ИИ-анализ</div>
+        <h4>ИИ-анализ переписки</h4>
+        <p>ИИ читает диалог и показывает, где гость манипулирует, а где косяк действительно наш. Меньше необоснованных скидок и компенсаций — честная картина по каждому спору.</p>
       </div>
       <div class="amini">
         <div class="afico">🛂</div>
-        <div class="tag">Yandex Vision OCR</div>
+        <div class="tag">ИИ-зрение</div>
         <h4>Распознавание паспорта</h4>
-        <p>ИИ считывает данные из фото паспорта при самозаселении, заполняет договор и шифрует ПД. Без ручного ввода и без сканов на столе.</p>
+        <p>ИИ считывает данные из фото паспорта при самозаселении, заполняет договор и шифрует персональные данные. Без ручного ввода и без сканов на столе.</p>
       </div>
       <div class="amini">
         <div class="afico">🧭</div>
         <div class="tag">ИИ-логистика</div>
         <h4>Распределение уборок</h4>
-        <p>ИИ ставит задачи на уборку от выездов и распределяет их между горничными — с учётом графика и адресов. Меньше окон, меньше простоя.</p>
+        <p>ИИ ставит задачи на уборку от выездов и распределяет их между горничными с учётом времени заезда и выезда, дороги между адресами и ротации — чтобы у горничной не замыливался взгляд на одной и той же квартире.</p>
       </div>
+      <div class="amini">
+        <div class="afico">🧲</div>
+        <div class="tag">ИИ-автоматизация</div>
+        <h4>Своя CRM без интегратора</h4>
+        <p>Настраиваешь правила один раз — когда и что отправить гостю — и система шлёт сама. А входящие ИИ раскладывает по воронке. Без программиста и платного настройщика.</p>
+      </div>
+    </div>
+
+    <div class="flowdemo" id="flowdemo">
+      <div class="flow-head"><span>Правило автосообщения</span><span class="ai-on"><span class="d"></span>ИИ разбирает сам</span></div>
+      <div class="rule-input">для всех броней дольше 8 ночей — через 4 ночи после заезда</div>
+      <div class="rule-parse">
+        <span class="chip-think">🤖 ИИ разбирает…</span>
+        <span class="pchip">🌍 все · ✅ брони</span>
+        <span class="pchip cond">📏 ночей &gt; 8</span>
+        <span class="pchip time">⏱ через 4 ночи</span>
+      </div>
+      <div class="rule-msg">💬 «Здравствуйте, <b>{имя}</b>! Вы гостите у нас уже несколько дней — хотите, мы наведём свежесть в квартире? Уборка займёт час-полтора в удобное время, всего 3000 ₽. Заказать в один клик: <b>{ссылка}</b>»<span class="msg-note">ИИ сам подставит имя гостя и ссылку на оплату</span></div>
+    </div>
+    <div class="flow-foot">Пишешь правило обычными словами — ИИ понимает, <b>кому, когда и при каком условии</b> отправить. Это и есть интуитивно понятная CRM без лишних трат на интегратора.</div>
+  </div>
+</section>
+
+<!-- TRY DEMO -->
+<section class="trydemo" id="trydemo">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Попробуй сам</div>
+      <h2>Система не даст забыть про деньги</h2>
+      <p>Меняешь бронь — RentOS ловит это и сам подсказывает, где ты теряешь доплату. Сдвинь время выезда и смотри.</p>
+    </div>
+    <div class="demo-stage">
+      <div class="demo-card">
+        <div class="dc-head">
+          <div class="dc-title">2-комн., ул. Тверская, 15</div>
+          <span class="dc-tag">🟠 Выезд сегодня</span>
+        </div>
+        <div class="dc-guest">🪪 Анна К. · Авито</div>
+        <div class="dc-row">
+          <span class="dc-label">Время выезда</span>
+          <span class="dc-time" id="lcTime">12:00</span>
+        </div>
+        <div class="lc-charges" id="lcCharges"></div>
+        <div class="lc-tip" id="lcTip">
+          <div class="lc-tip-txt" id="lcTipTxt"></div>
+          <button class="lc-tip-btn" id="lcTipBtn"></button>
+        </div>
+        <button class="demo-action" id="lcMove">Гость попросил выехать в 16:00 →</button>
+        <button class="demo-reset" id="lcReset">↺ Повторить</button>
+      </div>
+      <p class="demo-note">Так это работает в приложении: каждое изменение брони — поздний выезд, ранний заезд, лишние гости, продление — RentOS ловит и подсказывает доплату в один клик. Деньги не утекают «по доброте».</p>
     </div>
   </div>
 </section>
@@ -466,7 +669,7 @@
 <section class="sale">
   <div class="wrap">
     <div class="sec-head">
-      <div class="eyebrow">Продажа · от хаоса к системе</div>
+      <div class="eyebrow">от хаоса и пожаров к системе</div>
       <h2>Каждая задача из смены — это функция</h2>
       <p>То, что ночью отнимало у тебя сон, днём работает само. Вот как именно.</p>
     </div>
@@ -474,14 +677,14 @@
       <div class="feat">
         <div class="fico">🔑</div>
         <div class="ben">было: код не работает</div>
-        <h4>Самозаселение и умные замки</h4>
-        <p>Гость проходит заселение сам: верификация личности, договор, селфи — и получает временный код от замка Tuya или TT&nbsp;Lock. Код сам выдаётся и сам гаснет после выезда.</p>
+        <h4>Самозаселение, замки и сейф-боксы</h4>
+        <p>Гость заселяется сам: фото паспорта и селфи делает прямо в моменте — скачанный из интернета паспорт не подойдёт. Затем формируется договор, и гость получает временный код от умного замка, который гаснет после выезда. А где стоит сейф-бокс — горничная вводит код, и он не теряется в чатах. Каждый гость получает новый код.</p>
       </div>
       <div class="feat">
         <div class="fico">💬</div>
-        <div class="ben">было: «во сколько заселение?»</div>
-        <h4>Авто-ответы гостю <span class="ai-pill">✦ ИИ</span></h4>
-        <p>Типовые вопросы — время заезда, как пройти, где парковка — закрывает ИИ-переписка. Тебе прилетает только то, что правда требует человека.</p>
+        <div class="ben">было: гость требует скидку</div>
+        <h4>ИИ-разбор споров с гостями <span class="ai-pill">✦ ИИ</span></h4>
+        <p>ИИ читает переписку и показывает, где гость давит и манипулирует, а где ваш косяк. Меньше скидок и компенсаций на эмоциях — каждый спор решается по фактам.</p>
       </div>
       <div class="feat">
         <div class="fico">🛂</div>
@@ -499,13 +702,13 @@
         <div class="fico">🧹</div>
         <div class="ben">было: горничная не подтвердила</div>
         <h4>Координация уборок <span class="ai-pill">✦ ИИ-приёмка</span></h4>
-        <p>Задачи на уборку ставятся от выездов автоматически, у горничной свой доступ и код от замка. А готовую уборку принимает ИИ по фото — тебе видно, кто, когда и принято ли.</p>
+        <p>Задачи на уборку ставятся от выездов автоматически. А готовую уборку принимает ИИ по чек-листу в течение 1 минуты.</p>
       </div>
       <div class="feat">
         <div class="fico">📅</div>
         <div class="ben">было: новое бронирование в 3 ночи</div>
         <h4>Брони из всех каналов</h4>
-        <p>Синхронизация с RealtyCalendar и календарями по iCal. Новая бронь сама запускает весь сценарий: договор, код, сообщения, уборку.</p>
+        <p>Двусторонняя синхронизация с популярными менеджерами каналов. Новая бронь сама запускает весь сценарий: договор, код, сообщения, уборку.</p>
       </div>
     </div>
 
@@ -513,16 +716,64 @@
     <div class="anchor">
       <div>
         <div class="eyebrow">Почему это окупается</div>
-        <h3>Онлайн-касса и приём платежей — уже внутри</h3>
-        <p>Тебе не нужно отдельно покупать кассу, подключать эквайринг и сводить это всё руками. RentOS — это и операционка, и платёжный контур в одном месте.</p>
+        <h3>Один RentOS вместо зоопарка сервисов</h3>
+        <p>Не нужно собирать бизнес из пяти подписок и платить интегратору за каждый чих. CRM, договоры, касса и платежи — уже внутри и работают вместе.</p>
       </div>
       <ul>
+        <li><span class="tick">✓</span> CRM без интегратора — за один день настраиваешь, без поборов за каждое изменение</li>
+        <li><span class="tick">✓</span> Заключение договоров внутри — отдельный сервис подписания не нужен</li>
         <li><span class="tick">✓</span> Онлайн-касса по 54-ФЗ — чеки пробиваются сами</li>
         <li><span class="tick">✓</span> Приём оплат от гостей через СБП</li>
-        <li><span class="tick">✓</span> Депозиты холдом по карте, без ручных возвратов</li>
+        <li><span class="tick">✓</span> Экономия на комиссии за возвратные депозиты — холд по карте, без перевода</li>
         <li><span class="tick">✓</span> Выплаты на твой счёт по графику платформы</li>
-        <li><span class="tick">✓</span> Для ИП на УСН — без бумажной волокиты</li>
+        <li><span class="tick">✓</span> Без супервайзера — приёмку уборки делает ИИ, не нужно платить проверяющему</li>
       </ul>
+    </div>
+  </div>
+</section>
+
+<!-- ALL-IN -->
+<section class="allin" id="allin">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">И это ещё не всё</div>
+      <h2>Что ещё внутри RentOS</h2>
+    </div>
+
+    <div class="allin-group">
+      <h3>Деньги и документы</h3>
+      <div class="allin-grid">
+        <div class="aitem"><span class="ai-ic">🧾</span><div class="ai-t"><b>Акт о состоянии</b><span>штрафы из депозита с фото-доказательствами</span></div></div>
+        <div class="aitem"><span class="ai-ic">📄</span><div class="ai-t"><b>Счёт командировочному</b><span>выставить в один клик</span></div></div>
+        <div class="aitem"><span class="ai-ic">✍️</span><div class="ai-t"><b>Договор с подписью</b><span>простая электронная подпись по СМС</span></div></div>
+        <div class="aitem"><span class="ai-ic">🏛</span><div class="ai-t"><b>Белый бизнес</b><span>работаешь вбелую: касса, договоры и документы по закону</span></div></div>
+      </div>
+    </div>
+
+    <div class="allin-group">
+      <h3>Уборка</h3>
+      <div class="allin-grid">
+        <div class="aitem"><span class="ai-ic">🧴</span><div class="ai-t"><b>Пятна</b><span>горничная фоткает — ИИ советует, чем вывести</span></div></div>
+        <div class="aitem"><span class="ai-ic">🎥</span><div class="ai-t"><b>Видео-фиксация</b><span>уборка снимается на видео</span></div></div>
+        <div class="aitem"><span class="ai-ic">🧺</span><div class="ai-t"><b>Расходники</b><span>что заканчивается, сразу формируя заявку на покупку</span></div></div>
+        <div class="aitem"><span class="ai-ic">🚗</span><div class="ai-t"><b>Маршруты горничных</b><span>с учётом времени в пути между объектами</span></div></div>
+      </div>
+    </div>
+
+    <div class="allin-group">
+      <h3>Гости и конфликты</h3>
+      <div class="allin-grid">
+        <div class="aitem"><span class="ai-ic">🧠</span><div class="ai-t"><b>ИИ-советник</b><span>готовый ответ на любую сложную ситуацию с гостем</span></div></div>
+        <div class="aitem"><span class="ai-ic">💬</span><div class="ai-t"><b>Чат с горничной</b><span>отдельный, с фото и видео</span></div></div>
+      </div>
+    </div>
+
+    <div class="allin-group">
+      <h3>Каналы и порядок</h3>
+      <div class="allin-grid">
+        <div class="aitem"><span class="ai-ic">🔗</span><div class="ai-t"><b>Все брони в одном окне</b><span>со всех каналов и календарей</span></div></div>
+        <div class="aitem"><span class="ai-ic">📒</span><div class="ai-t"><b>История действий</b><span>по каждой брони видно, что менялось и кто это сделал</span></div></div>
+      </div>
     </div>
   </div>
 </section>
@@ -533,9 +784,9 @@
     <div class="final-card">
       <div class="eyebrow">Закрытая бета</div>
       <h2>Отдай ночную смену системе</h2>
-      <p>Подключаем первых операторов вручную и под задачу. Напиши боту — расскажем, подойдёт ли RentOS под твой портфель.</p>
+      <p>Напиши боту — пришлём ссылку на приложение, как только оно выйдет, и промо ролики, как RentOS работает изнутри: самозаселение, замки, приёмка уборки, деньги.</p>
       <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Получить доступ в Telegram →</a>
-      <div class="smallnote">@rentosbetabot · ответим лично, без спама</div>
+      <div class="smallnote">@rentosbetabot · ссылка на приложение и видео функций</div>
       <div class="members">
         Уже среди подключённых операторов?
         <a href="#" data-cabinet>
@@ -553,7 +804,7 @@
     <div class="foot-grid">
       <div>
         <span class="logo">RentOS<span style="color:var(--primary-hi)">.</span></span>
-        <p class="blurb">Операционная система для профессиональных операторов посуточной аренды. Заселение, платежи, уборки и документы — на автопилоте.</p>
+        <p class="blurb">Операционная система для профессиональных операторов посуточной аренды. Заселение, платежи, уборки и документы — работают сами.</p>
       </div>
       <div class="foot-col">
         <h5>Продукт</h5>
@@ -632,16 +883,32 @@
     var lines = Array.prototype.slice.call(checkpane.querySelectorAll('.cline'));
     var verdict = document.getElementById('verdict');
     function revealLines(){
-      if(reduce){ lines.forEach(function(l){l.classList.add('done');}); verdict.classList.add('show'); return; }
       lines.forEach(function(l,i){ setTimeout(function(){ l.classList.add('done'); }, 350 + i*520); });
       setTimeout(function(){ verdict.classList.add('show'); }, 350 + lines.length*520 + 250);
     }
     if('IntersectionObserver' in window){
       var io=new IntersectionObserver(function(entries){
         entries.forEach(function(en){ if(en.isIntersecting){ revealLines(); io.disconnect(); } });
-      },{threshold:.4});
+      },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
       io.observe(checkpane);
     } else { revealLines(); }
+  }
+
+  // ----- Разбор правила ИИ: анимация при скролле -----
+  var flow=document.getElementById('flowdemo');
+  if(flow){
+    var think=flow.querySelector('.chip-think');
+    var chips=Array.prototype.slice.call(flow.querySelectorAll('.pchip'));
+    function fireFlow(){
+      setTimeout(function(){ if(think) think.classList.add('gone'); }, 850);
+      chips.forEach(function(c,i){ setTimeout(function(){ c.classList.add('show'); }, 1000 + i*450); });
+    }
+    if('IntersectionObserver' in window){
+      var io2=new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ fireFlow(); io2.disconnect(); } });
+      },{threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+      io2.observe(flow);
+    } else { fireFlow(); }
   }
 
   /* ============ GAME ============ */
@@ -671,7 +938,7 @@
   var state, spawnTimer, tickTimer, cards;
 
   function reset(){
-    state={nerve:100, happy:0, lost:0, money:0, running:false, elapsed:0, spawnEvery:1400};
+    state={nerve:100, happy:0, lost:0, money:0, running:false, elapsed:0, spawnEvery:1100};
     cards=[];
     paint();
   }
@@ -684,23 +951,27 @@
 
   function spawn(){
     if(!state.running) return;
-    if(cards.length >= 9){ return; } // board full -> overwhelm, just keep timers running
+    if(cards.length >= 7){ return; }
     var def = TASKS[Math.floor(Math.random()*TASKS.length)];
-    var ttl = Math.max(2200, 5200 - state.elapsed*60); // gets harder
+    var ttl = Math.max(1500, 3800 - state.elapsed*70); // жёстче со временем
     var el = document.createElement('div');
     el.className='gcard';
     el.innerHTML='<div class="row"><span class="gico">'+def.ico+'</span><span class="gtx">'+def.tx+'</span></div>'+
                  '<div class="bar"><i></i></div><span class="check">✓</span>';
     var bar = el.querySelector('.bar i');
     var card = {el:el, bar:bar, born:Date.now(), ttl:ttl, def:def, resolved:false, dead:false};
-    el.addEventListener('click', function(){
+    function resolveCard(){
       if(card.resolved||card.dead) return;
       card.resolved=true; el.classList.add('resolved');
-      state.happy++; state.nerve=Math.min(100,state.nerve+1.5);
+      state.happy++; state.nerve=Math.min(100,state.nerve+1.2);
       paint();
-      setTimeout(function(){ removeCard(card); }, 320);
-    });
+      setTimeout(function(){ removeCard(card); }, 300);
+    }
+    el.addEventListener('click', resolveCard);
     board.appendChild(el); cards.push(card);
+    var bw=board.clientWidth, bh=board.clientHeight, cw=el.offsetWidth||200, ch=el.offsetHeight||70;
+    el.style.left=Math.max(6, Math.random()*(bw-cw-12))+'px';
+    el.style.top =Math.max(6, Math.random()*(bh-ch-12))+'px';
   }
 
   function removeCard(card){
@@ -712,7 +983,7 @@
     if(!state.running) return;
     state.elapsed += 0.1;
     // spawn pacing
-    state.spawnEvery = Math.max(550, 1400 - state.elapsed*45);
+    state.spawnEvery = Math.max(420, 1100 - state.elapsed*55);
     var now=Date.now();
     for(var i=cards.length-1;i>=0;i--){
       var c=cards[i]; if(c.resolved||c.dead) continue;
@@ -720,7 +991,7 @@
       if(pct<=0){
         // expired
         c.dead=true; c.el.style.opacity='0'; c.el.style.transform='scale(.9)';
-        state.lost++; state.money+=c.def.money; state.nerve-=9;
+        state.lost++; state.money+=c.def.money; state.nerve-=12;
         paint();
         (function(cc){ setTimeout(function(){ removeCard(cc); },300); })(c);
       } else {
@@ -728,7 +999,7 @@
         if(pct<0.35) c.el.classList.add('urgent');
       }
     }
-    if(state.nerve<=0 || state.elapsed>=30){ endGame(); }
+    if(state.nerve<=0 || state.elapsed>=15){ endGame(); }
   }
 
   var lastSpawn=0;
@@ -748,7 +1019,7 @@
     cards=[];
     lastSpawn=0;
     tickTimer=setInterval(tick,100);
-    spawn(); spawn();
+    spawn(); spawn(); spawn();
     requestAnimationFrame(loop);
   }
 
@@ -757,7 +1028,7 @@
     clearInterval(tickTimer);
     var title, sub;
     if(state.nerve<=0){ title='Ты выгорел.'; sub='Нервы кончились раньше брони. Так и происходит, когда ресепшен, бухгалтерия и охрана — это один человек. Ты.'; }
-    else { title='Смена окончена.'; sub='Ты держался 30 секунд. А смена длится круглосуточно, без выходных. В одиночку всё не успеть — это математика, а не лень.'; }
+    else { title='Смена окончена.'; sub='Ты продержался 15 секунд. А смена длится круглосуточно, без выходных. В одиночку всё не успеть — подключайся к RentOS.'; }
     document.getElementById('end-title').textContent=title;
     document.getElementById('end-sub').textContent=sub;
     document.getElementById('end-score').innerHTML=
@@ -795,6 +1066,33 @@
 
   document.getElementById('btn-start').addEventListener('click', startGame);
   document.getElementById('btn-rentos').addEventListener('click', runRentOS);
+
+  // ----- Демо «поздний выезд»: система не даёт забыть про доплату -----
+  (function(){
+    var moveBtn=document.getElementById('lcMove'); if(!moveBtn) return;
+    var timeEl=document.getElementById('lcTime'), tip=document.getElementById('lcTip'),
+        tipTxt=document.getElementById('lcTipTxt'), tipBtn=document.getElementById('lcTipBtn'),
+        charges=document.getElementById('lcCharges'), resetBtn=document.getElementById('lcReset');
+    function resetDemo(){
+      timeEl.textContent='12:00'; timeEl.className='dc-time';
+      tip.className='lc-tip'; tipTxt.textContent=''; tipBtn.style.display='';
+      charges.className='lc-charges'; charges.innerHTML='';
+      moveBtn.className='demo-action'; resetBtn.className='demo-reset';
+    }
+    moveBtn.addEventListener('click', function(){
+      timeEl.textContent='16:00'; timeEl.className='dc-time changed';
+      tipTxt.textContent='Выезд позже изначального (12:00 → 16:00). Рекомендую добавить доплату за поздний выезд.';
+      tipBtn.textContent='Доплата за поздний выезд'; tip.className='lc-tip show';
+      moveBtn.className='demo-action spent';
+    });
+    tipBtn.addEventListener('click', function(){
+      charges.innerHTML='<div class="lc-charge"><span>Поздний выезд</span><b>+1 500 ₽</b></div>';
+      charges.className='lc-charges show';
+      tipTxt.textContent='✓ Добавлено в счёт. RentOS не дал тебе потерять 1 500 ₽.';
+      tip.className='lc-tip show done'; resetBtn.className='demo-reset show';
+    });
+    resetBtn.addEventListener('click', resetDemo);
+  })();
 
   reset();
 })();
