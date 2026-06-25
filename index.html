@@ -54,22 +54,22 @@
 
   /* ================= HERO (NIGHT) ================= */
   .hero{position:relative;background:radial-gradient(120% 90% at 70% -10%, #1B2742 0%, var(--midnight-2) 45%, var(--midnight) 100%);
-    color:var(--night-ink);overflow:hidden;padding:160px 0 110px}
+    color:var(--night-ink);overflow:hidden;padding:112px 0 64px}
   .stars{position:absolute;inset:0;pointer-events:none}
   .star{position:absolute;width:3px;height:3px;border-radius:50%;background:var(--primary-hi);opacity:.0;
     animation:blink 4s infinite ease-in-out}
   @keyframes blink{0%,100%{opacity:.05;transform:scale(.8)}50%{opacity:.7;transform:scale(1.3)}}
   .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:center;position:relative;z-index:2}
-  .hero .clock{font-family:var(--mono);font-size:13px;color:var(--primary-hi);letter-spacing:.18em;margin-bottom:22px;
+  .hero .clock{font-family:var(--mono);font-size:13px;color:var(--primary-hi);letter-spacing:.18em;margin-bottom:14px;
     display:inline-flex;align-items:center;gap:10px}
   .hero .clock .pulse{width:8px;height:8px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 0 rgba(245,165,36,.6);animation:ping 1.6s infinite}
   @keyframes ping{0%{box-shadow:0 0 0 0 rgba(245,165,36,.6)}70%{box-shadow:0 0 0 12px rgba(245,165,36,0)}100%{box-shadow:0 0 0 0 rgba(245,165,36,0)}}
-  .hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(38px,6vw,66px);line-height:1.02;letter-spacing:-.03em;margin-bottom:24px}
+  .hero h1{font-family:var(--disp);font-weight:800;font-size:clamp(30px,4.4vw,50px);line-height:1.06;letter-spacing:-.03em;margin-bottom:18px}
   .hero h1 .em{color:var(--primary-hi)}
-  .hero p.lead{font-size:clamp(17px,2vw,20px);color:var(--night-sub);max-width:560px;margin-bottom:36px}
+  .hero p.lead{font-size:clamp(16px,1.7vw,19px);color:var(--night-sub);max-width:560px;margin-bottom:20px}
   .hero p.lead b{color:var(--night-ink);font-weight:600}
   .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-  .hero-note{font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-top:22px}
+  .hero-note{font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-top:14px;margin-bottom:20px}
 
   /* phone mock with raining notifications */
   .phone{position:relative;width:300px;height:480px;margin:0 auto;border-radius:40px;
@@ -107,7 +107,7 @@
   .stat .lbl{font-size:14px;color:var(--night-sub);margin-top:12px;line-height:1.35}
   .badges{display:flex;flex-wrap:wrap;gap:12px;margin-top:42px}
   .badge{font-family:var(--mono);font-size:12px;letter-spacing:.05em;color:var(--night-ink);
-    border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.04);border-radius:99px;padding:9px 16px}
+    border:1px solid rgba(255,255,255,.22);background:rgba(15,21,40,.55);border-radius:99px;padding:9px 16px}
   .badge b{color:var(--primary-hi);font-weight:500}
 
   /* ================= GAME (night shift) ================= */
@@ -305,8 +305,8 @@
     font-size:13px;color:#555;line-height:1.55}
   .rule-msg b{color:#5B7CDE;font-weight:600}
   .rule-msg .msg-note{display:block;margin-top:8px;font-family:var(--mono);font-size:10.5px;color:#9AA3B2}
-  .flow-foot{margin-top:18px;font-size:13.5px;color:var(--night-ink);text-align:center}
-  .flow-foot b{color:var(--primary-hi)}
+  .flow-foot{margin-top:18px;font-size:13.5px;color:var(--ink);text-align:center}
+  .flow-foot b{color:var(--primary)}
 
   /* ================= TRY DEMO (late checkout, RentOS UI) ================= */
   .trydemo{background:var(--paper);padding:96px 0 44px}
@@ -373,7 +373,7 @@
     .allin-grid{grid-template-columns:repeat(2,1fr)}
   }
   @media(max-width:600px){
-    .hero{padding:130px 0 80px}
+    .hero{padding:92px 0 52px}
     .stats{grid-template-columns:1fr 1fr}
     .feats{grid-template-columns:1fr}
     .board{height:460px}
@@ -450,7 +450,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         <span>Войти в личный кабинет</span>
       </a>
-      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-primary nav-cta">Получить доступ</a>
+      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-primary nav-cta">Получи доступ</a>
     </div>
   </div>
 </nav>
@@ -461,13 +461,13 @@
   <div class="wrap hero-grid">
     <div>
       <div class="clock"><span class="pulse"></span> 03:14 · ВТОРНИК · ТЕБЕ ПИШЕТ ГОСТЬ</div>
-      <h1>Гость не может войти<br>в квартиру.<br><span class="em">Угадай, кто проснулся.</span></h1>
+      <h1>Гость не может войти<br>в квартиру.<br><span class="em">Угадай, кто будет решать эту проблему.</span></h1>
       <p class="lead">Ты, конечно. Кто ещё по ночам разбирается с паспортами, договорами, оплатами и кодами от замков? <b>RentOS</b> сделает это за тебя — потому что знает цену сорванного заселения. Это твои деньги, и он их не упустит.</p>
-      <div class="hero-actions">
-        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Забрать своё время →</a>
-        <a href="#game" class="btn btn-ghost">Прожить смену вручную</a>
-      </div>
       <div class="hero-note">// для профессиональных участников рынка посуточной аренды</div>
+      <div class="hero-actions">
+        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Подключись</a>
+        <a href="#game" class="btn btn-ghost">Проживи смену без RentOS</a>
+      </div>
     </div>
     <div>
       <div class="phone" aria-hidden="true">
@@ -548,13 +548,13 @@
         <div class="board-overlay board-start show" id="ov-start">
           <h3>Готов отдежурить за свою недвижимость?</h3>
           <p>Кликай по задачам как можно быстрее. Каждая просроченная — это злой гость и потерянные деньги.</p>
-          <button class="btn btn-glow" id="btn-start">Начать смену</button>
+          <button class="btn btn-glow" id="btn-start">Начни смену</button>
         </div>
         <div class="board-overlay" id="ov-end">
           <h3 id="end-title">Смена окончена.</h3>
           <p id="end-sub">Ты держался. Но в одиночку всё не успеть — это не лень, это математика.</p>
           <div class="score" id="end-score"></div>
-          <button class="btn btn-glow" id="btn-rentos">⚡ Включить RentOS и пересмотреть смену</button>
+          <button class="btn btn-glow" id="btn-rentos">⚡ Включи RentOS</button>
         </div>
       </div>
     </div>
@@ -785,7 +785,7 @@
       <div class="eyebrow">Закрытая бета</div>
       <h2>Отдай ночную смену системе</h2>
       <p>Напиши боту — пришлём ссылку на приложение, как только оно выйдет, и промо ролики, как RentOS работает изнутри: самозаселение, замки, приёмка уборки, деньги.</p>
-      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Получить доступ в Telegram →</a>
+      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Получи ранний доступ →</a>
       <div class="smallnote">@rentosbetabot · ссылка на приложение и видео функций</div>
       <div class="members">
         Уже среди подключённых операторов?
@@ -824,7 +824,7 @@
       RentOS обрабатывает персональные данные в соответствии с Федеральным законом №152-ФЗ «О персональных данных». Платёжные операции и фискализация — в соответствии с №54-ФЗ. Информация на сайте не является публичной офертой; состав услуг и условия уточняются индивидуально.
       <div class="req">
         <!-- TODO: заполнить реквизиты после регистрации ООО / актуальные данные ИП -->
-        Оператор сервиса: [ИП/ООО «___»] · ИНН [___] · ОГРН(ИП) [___]<br>
+        Оператор сервиса: ООО «РЭНТОС» · ИНН 5027347760 · ОГРН 1265000042856<br>
         Контакт: <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">@rentosbetabot</a> · © <span id="year"></span> RentOS. Все права защищены.
       </div>
     </div>
