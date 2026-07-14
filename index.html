@@ -360,6 +360,18 @@
   .aitem .ai-t b{display:block;color:var(--ink);font-size:14px;font-weight:600;margin-bottom:3px}
   .aitem .ai-t span{font-size:12.5px;color:var(--sub);line-height:1.45}
 
+  /* ================= COOKIE BANNER ================= */
+  .cookiebar{position:fixed;left:16px;right:16px;bottom:16px;z-index:200;display:none;
+    background:#0F1528;border:1px solid rgba(255,255,255,.14);border-radius:16px;
+    padding:18px 20px;box-shadow:0 20px 60px rgba(0,0,0,.4);
+    gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;max-width:1000px;margin:0 auto}
+  .cookiebar.show{display:flex}
+  .cookiebar p{font-size:13px;color:#C7CEDB;line-height:1.55;margin:0;flex:1 1 420px}
+  .cookiebar a{color:#8AA6FF;text-decoration:underline}
+  .cookiebar button{background:var(--primary);color:#fff;border:none;border-radius:10px;
+    padding:11px 24px;font-family:var(--body);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+  .cookiebar button:hover{background:var(--primary-hover)}
+
   /* ================= RESPONSIVE ================= */
   @media(max-width:920px){
     .hero-grid{grid-template-columns:1fr;gap:48px}
@@ -814,10 +826,12 @@
       </div>
       <div class="foot-col">
         <h5>Документы</h5>
-        <a href="#" data-doc="privacy">Политика обработки ПД</a>
-        <a href="#" data-doc="offer">Публичная оферта</a>
-        <a href="#" data-doc="cookie">Использование cookie</a>
-        <a href="#" data-doc="consent">Согласие на обработку ПД</a>
+        <a href="/policy.html">Политика обработки персональных данных</a>
+        <a href="/terms.html">Пользовательское соглашение</a>
+        <a href="/license.html">Лицензионное соглашение</a>
+        <a href="/cookies.html">Согласие на cookie и Яндекс.Метрику</a>
+        <a href="/ads.html">Согласие на рекламные рассылки</a>
+        <a href="/reviews.html">Согласие на публикацию отзывов</a>
       </div>
     </div>
     <div class="legal">
@@ -1095,6 +1109,26 @@
   })();
 
   reset();
+})();
+</script>
+<!-- COOKIE BANNER -->
+<div class="cookiebar" id="cookiebar" role="dialog" aria-live="polite">
+  <p>Мы используем файлы «Cookies» и метрические системы (Яндекс.Метрика) для сбора и анализа информации о производительности и использовании сайта. Нажимая кнопку «Согласен», вы <a href="/cookies.html">даёте согласие</a> на размещение файлов «Cookies» и обработку данных метрических систем. Если вы не хотите, чтобы мы собирали ваши данные с помощью файлов «Cookies», вы можете отключить их сбор в настройках своего браузера. <a href="/policy.html#cookie">Больше о файлах «Cookies»</a>.</p>
+  <button id="cookieOk">Согласен</button>
+</div>
+
+<script>
+(function(){
+  var KEY='rentos_cookie_ok';
+  var bar=document.getElementById('cookiebar'), btn=document.getElementById('cookieOk');
+  if(!bar||!btn) return;
+  var ok=false;
+  try{ ok = localStorage.getItem(KEY)==='1'; }catch(e){}
+  if(!ok){ setTimeout(function(){ bar.classList.add('show'); }, 900); }
+  btn.addEventListener('click', function(){
+    try{ localStorage.setItem(KEY,'1'); }catch(e){}
+    bar.classList.remove('show');
+  });
 })();
 </script>
 </body>
