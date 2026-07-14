@@ -372,6 +372,25 @@
     padding:11px 24px;font-family:var(--body);font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
   .cookiebar button:hover{background:var(--primary-hover)}
 
+  /* ================= PRICING ================= */
+  .pricing{background:var(--paper);padding:20px 0 92px}
+  .pricing .eyebrow{color:var(--primary)}
+  .pricing .sec-head{margin:0 auto 36px;text-align:center;max-width:640px}
+  .pricing h2{font-family:var(--disp);font-weight:600;font-size:clamp(28px,4vw,44px);color:var(--ink);letter-spacing:-.02em;margin:14px 0 16px}
+  .pricing .sec-head p{color:var(--sub);font-size:18px}
+  .price-card{max-width:620px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:22px;
+    padding:clamp(28px,4vw,44px);text-align:center;box-shadow:0 1px 2px rgba(16,24,40,.04),0 20px 50px rgba(16,24,40,.08)}
+  .price-num{font-family:var(--disp);font-weight:800;font-size:clamp(46px,8vw,72px);color:var(--primary);letter-spacing:-.03em;line-height:1}
+  .price-of{font-size:17px;color:var(--ink);font-weight:600;margin-top:10px}
+  .price-sub{font-size:15px;color:var(--sub);margin-top:10px;line-height:1.6}
+  .price-incl{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:26px 0 0;text-align:left}
+  .price-incl div{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:#374151}
+  .price-incl .tk{color:var(--success);font-weight:700;flex:0 0 auto}
+  .price-how{margin-top:24px;padding:16px 18px;background:#F8F9FC;border:1px solid var(--line);border-radius:12px;
+    font-size:13.5px;color:#374151;line-height:1.6;text-align:left}
+  .price-how b{color:var(--ink)}
+  .price-foot{margin-top:24px;font-family:var(--mono);font-size:11.5px;color:var(--sub);line-height:1.6}
+
   /* ================= RESPONSIVE ================= */
   @media(max-width:920px){
     .hero-grid{grid-template-columns:1fr;gap:48px}
@@ -402,6 +421,7 @@
     .founder-by{padding-left:21px}
     .ai-mini{grid-template-columns:1fr}
     .allin-grid{grid-template-columns:1fr}
+    .price-incl{grid-template-columns:1fr}
     .frow{grid-template-columns:1fr;gap:6px}
     .frow .arr{display:none}
     .frow .sent{justify-self:start}
@@ -790,6 +810,34 @@
   </div>
 </section>
 
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="eyebrow">Стоимость</div>
+      <h2>Платишь, только когда зарабатываешь</h2>
+      <p>Никакой подписки, платы за объекты и счетов за интеграции. Одна понятная ставка — и весь RentOS твой.</p>
+    </div>
+    <div class="price-card">
+      <div class="price-num">2,5%</div>
+      <div class="price-of">от стоимости брони</div>
+      <div class="price-sub">Нет броней — нет платежей. Нет платы за количество квартир, сотрудников и подключённых каналов.</div>
+      <div class="price-incl">
+        <div><span class="tk">✓</span> Самозаселение, замки и коды</div>
+        <div><span class="tk">✓</span> ИИ-приёмка уборки</div>
+        <div><span class="tk">✓</span> Договоры с электронной подписью</div>
+        <div><span class="tk">✓</span> Онлайн-касса по 54-ФЗ</div>
+        <div><span class="tk">✓</span> Приём оплат и депозиты</div>
+        <div><span class="tk">✓</span> CRM, чаты и автосообщения</div>
+      </div>
+      <div class="price-how">
+        <b>Как это работает:</b> гость платит на счёт ООО «РЭНТОС» — мы действуем как платёжный агент по вашему поручению. Из полученной суммы удерживается 2,5%, остальное перечисляется вам по итогам расчётного периода. Отчёт агента — в личном кабинете.
+      </div>
+      <div class="price-foot">Актуальные условия и порядок оплаты — в <a href="/license.html">Лицензионном соглашении</a>.</div>
+    </div>
+  </div>
+</section>
+
 <!-- FINAL CTA -->
 <section class="final">
   <div class="wrap">
@@ -822,6 +870,7 @@
         <h5>Продукт</h5>
         <a href="#game">Мини-игра «Ночная смена»</a>
         <a href="#top">Возможности</a>
+        <a href="#pricing">Стоимость</a>
         <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">Доступ в бету</a>
       </div>
       <div class="foot-col">
@@ -838,8 +887,12 @@
       RentOS обрабатывает персональные данные в соответствии с Федеральным законом №152-ФЗ «О персональных данных». Платёжные операции и фискализация — в соответствии с №54-ФЗ. Информация на сайте не является публичной офертой; состав услуг и условия уточняются индивидуально.
       <div class="req">
         <!-- TODO: заполнить реквизиты после регистрации ООО / актуальные данные ИП -->
-        Оператор сервиса: ООО «РЭНТОС» · ИНН 5027347760 · ОГРН 1265000042856<br>
-        Контакт: <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">@rentosbetabot</a> · © <span id="year"></span> RentOS. Все права защищены.
+        Правообладатель ПО «RentOS»: Общество с ограниченной ответственностью «РЭНТОС» (ООО «РЭНТОС»)<br>
+        ОГРН 1265000042856 · ИНН 5027347760 · КПП 502701001<br>
+        Адрес: 140003, Московская обл., г.о. Люберцы, г. Люберцы, ул. Лётчика Ларюшина, д. 6, кв. 199<br>
+        Тел.: <a href="tel:+79850783643">+7 985 078-36-43</a> · E-mail: <a href="mailto:info@rentos.online">info@rentos.online</a> · Telegram: <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">@rentosbetabot</a><br>
+        Вид деятельности в области информационных технологий (приказ Минцифры России от 11.05.2023 № 449): <b>1.01</b> — проектирование, разработка, адаптация и модификация программного обеспечения. ОКВЭД 62.01.<br>
+        © <span id="year"></span> ООО «РЭНТОС». Все права защищены.
       </div>
     </div>
   </div>
@@ -886,7 +939,7 @@
 
   // ----- Личный кабинет -----
   // TODO: замени на реальный URL личного кабинета (фронтенд на Vercel)
-  var CABINET_URL = 'https://app.rentos.online';
+  var CABINET_URL = 'https://app.rentos.online/login';
   Array.prototype.forEach.call(document.querySelectorAll('[data-cabinet]'), function(a){
     a.setAttribute('href', CABINET_URL);
   });
