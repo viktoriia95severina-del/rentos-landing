@@ -41,6 +41,9 @@
   .btn-ghost{background:transparent;color:var(--night-ink);border:1px solid var(--night-line)}
   .btn-ghost:hover{border-color:var(--primary-hi)}
   :focus-visible{outline:3px solid var(--primary-hi);outline-offset:3px;border-radius:6px}
+  @keyframes rpulse{0%,100%{outline:3px solid rgba(91,124,222,0);outline-offset:3px}50%{outline:3px solid rgba(91,124,222,.55);outline-offset:5px}}
+  .rpulse{animation:rpulse 1.8s ease-in-out infinite;border-radius:12px}
+
 
   /* ================= NAV ================= */
   nav{position:fixed;top:0;left:0;right:0;z-index:50;background:rgba(12,17,32,0);backdrop-filter:blur(0);
@@ -354,7 +357,7 @@
   .allin .sec-head p{color:var(--sub);font-size:18px}
   .allin-group{margin-bottom:26px}
   .allin-group h3{font-family:var(--mono);font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);margin:0 0 14px 2px}
-  .allin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .allin-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
   .aitem{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 18px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
   .aitem .ai-ic{font-size:20px;flex:0 0 auto;line-height:1.2}
   .aitem .ai-t b{display:block;color:var(--ink);font-size:14px;font-weight:600;margin-bottom:3px}
@@ -380,6 +383,8 @@
   .pricing .sec-head p{color:var(--sub);font-size:18px}
   .price-card{max-width:620px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:22px;
     padding:clamp(28px,4vw,44px);text-align:center;box-shadow:0 1px 2px rgba(16,24,40,.04),0 20px 50px rgba(16,24,40,.08)}
+  .price-beta{display:inline-block;background:rgba(91,124,222,.1);color:var(--primary);border:1px solid rgba(91,124,222,.25);border-radius:99px;padding:7px 16px;font-size:13px;font-weight:600;margin-bottom:22px;line-height:1.4}
+  .price-allin{margin-top:20px;font-size:15px;color:var(--ink);font-weight:600;line-height:1.5}
   .price-num{font-family:var(--disp);font-weight:800;font-size:clamp(46px,8vw,72px);color:var(--primary);letter-spacing:-.03em;line-height:1}
   .price-of{font-size:17px;color:var(--ink);font-weight:600;margin-top:10px}
   .price-sub{font-size:15px;color:var(--sub);margin-top:10px;line-height:1.6}
@@ -482,7 +487,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
         <span>Войти в личный кабинет</span>
       </a>
-      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-primary nav-cta">Получи доступ</a>
+      <a href="https://app.rentos.online/" class="btn btn-primary nav-cta">Получи доступ</a>
     </div>
   </div>
 </nav>
@@ -497,7 +502,7 @@
       <p class="lead">Ты, конечно. Кто ещё по ночам разбирается с паспортами, договорами, оплатами и кодами от замков? <b>RentOS</b> сделает это за тебя — потому что знает цену сорванного заселения. Это твои деньги, и он их не упустит.</p>
       <div class="hero-note">// для профессиональных участников рынка посуточной аренды</div>
       <div class="hero-actions">
-        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Подключись</a>
+        <a href="https://app.rentos.online/" class="btn btn-glow">Подключись</a>
         <a href="#game" class="btn btn-ghost">Проживи смену без RentOS</a>
       </div>
     </div>
@@ -778,7 +783,7 @@
         <div class="aitem"><span class="ai-ic">🧾</span><div class="ai-t"><b>Акт о состоянии</b><span>штрафы из депозита с фото-доказательствами</span></div></div>
         <div class="aitem"><span class="ai-ic">📄</span><div class="ai-t"><b>Счёт командировочному</b><span>выставить в один клик</span></div></div>
         <div class="aitem"><span class="ai-ic">✍️</span><div class="ai-t"><b>Договор с подписью</b><span>простая электронная подпись по СМС</span></div></div>
-        <div class="aitem"><span class="ai-ic">🏛</span><div class="ai-t"><b>Белый бизнес</b><span>работаешь вбелую: касса, договоры и документы по закону</span></div></div>
+        <div class="aitem"><span class="ai-ic">🏛</span><div class="ai-t"><b>Белый бизнес</b><span>работаешь вбелую: договоры и документы по закону</span></div></div>
       </div>
     </div>
 
@@ -793,16 +798,10 @@
     </div>
 
     <div class="allin-group">
-      <h3>Гости и конфликты</h3>
+      <h3>Гости и порядок</h3>
       <div class="allin-grid">
         <div class="aitem"><span class="ai-ic">🧠</span><div class="ai-t"><b>ИИ-советник</b><span>готовый ответ на любую сложную ситуацию с гостем</span></div></div>
         <div class="aitem"><span class="ai-ic">💬</span><div class="ai-t"><b>Чат с горничной</b><span>отдельный, с фото и видео</span></div></div>
-      </div>
-    </div>
-
-    <div class="allin-group">
-      <h3>Каналы и порядок</h3>
-      <div class="allin-grid">
         <div class="aitem"><span class="ai-ic">🔗</span><div class="ai-t"><b>Все брони в одном окне</b><span>со всех каналов и календарей</span></div></div>
         <div class="aitem"><span class="ai-ic">📒</span><div class="ai-t"><b>История действий</b><span>по каждой брони видно, что менялось и кто это сделал</span></div></div>
       </div>
@@ -819,6 +818,7 @@
       <p>Никакой подписки, платы за объекты и счетов за интеграции. Одна понятная ставка — и весь RentOS твой.</p>
     </div>
     <div class="price-card">
+      <div class="price-beta">Закрытая бета: для первых 100 операторов ставка 2,5% зафиксирована навсегда — это фактически себестоимость</div>
       <div class="price-num">2,5%</div>
       <div class="price-of">от стоимости брони</div>
       <div class="price-sub">Нет броней — нет платежей. Нет платы за количество квартир, сотрудников и подключённых каналов.</div>
@@ -826,16 +826,97 @@
         <div><span class="tk">✓</span> Самозаселение, замки и коды</div>
         <div><span class="tk">✓</span> ИИ-приёмка уборки</div>
         <div><span class="tk">✓</span> Договоры с электронной подписью</div>
-        <div><span class="tk">✓</span> Онлайн-касса по 54-ФЗ</div>
-        <div><span class="tk">✓</span> Приём оплат и депозиты</div>
+        <div><span class="tk">✓</span> Приём оплат и депозиты — эквайринг уже внутри</div>
         <div><span class="tk">✓</span> CRM, чаты и автосообщения</div>
+        <div><span class="tk">✓</span> Все брони со всех каналов в одном окне</div>
+        <div><span class="tk">✓</span> Менеджер не дёргает вас: ИИ подсказывает, что ответить трудному гостю</div>
+        <div><span class="tk">✓</span> Горничная не спрашивает вас: ИИ советует, как вывести пятно и что докупить</div>
       </div>
+      <div class="price-allin">Всё это — внутри 2,5%. Отдельные сервисы для этого можно с чистой совестью отключить.</div>
       <div class="price-how">
-        <b>Как это работает:</b> гость платит на счёт ООО «РЭНТОС» — мы действуем как платёжный агент по вашему поручению. Из полученной суммы удерживается 2,5%, остальное перечисляется вам по итогам расчётного периода. Отчёт агента — в личном кабинете.
+        <b>Как это работает:</b> гость платит на счёт ООО «РЭНТОС» — мы действуем как платёжный агент по вашему поручению. Вознаграждение — 2,5% от стоимости завершённых бронирований, остальное перечисляется вам по итогам расчётного периода. Отчёт агента — в личном кабинете.
       </div>
       <div class="price-foot">Актуальные условия и порядок оплаты — в <a href="/license.html">Лицензионном соглашении</a>.</div>
     </div>
   </div>
+</section>
+
+
+<!-- КАЛЬКУЛЯТОР ВЫГОДЫ -->
+<section class="rcalc">
+<style>
+.rcalc{padding:26px 0 10px}
+.rcalc .calc-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:clamp(24px,4vw,44px);box-shadow:0 1px 2px rgba(16,24,40,.04);max-width:860px;margin:0 auto}
+.rcalc h2{font-family:var(--disp);font-weight:600;font-size:clamp(22px,3vw,30px);letter-spacing:-.02em;margin:0 0 22px;color:var(--ink)}
+.rcalc .calc-inputs{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:22px}
+.rcalc .cin label{display:block;font-size:12.5px;font-weight:600;color:var(--ink);margin-bottom:6px}
+.rcalc .cin input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:15px;font-family:var(--body);color:var(--ink);background:#fff;outline:none}
+.rcalc .cin input:focus{border-color:var(--primary)}
+.rcalc .calc-total{font-family:var(--disp);font-weight:600;font-size:clamp(20px,2.8vw,27px);margin:4px 0 18px;color:var(--ink)}
+.rcalc .calc-total b{color:var(--primary)}
+.rcalc .calc-min{display:none;background:#FFF8E6;border:1px solid #F3DFB0;border-radius:12px;padding:12px 16px;font-size:14px;color:#8a6d1a;margin-bottom:14px}
+.rcalc table{width:100%;border-collapse:collapse;font-size:14px}
+.rcalc th{text-align:left;padding:6px 6px 10px;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);font-weight:500;border-bottom:1px solid var(--line)}
+.rcalc th.csum{text-align:right}
+.rcalc td{padding:10px 6px;border-bottom:1px solid var(--line);color:#374151;vertical-align:middle}
+.rcalc tr:last-child td{border-bottom:none}
+.rcalc td.csum{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;color:var(--ink);white-space:nowrap}
+.rcalc tr.ccost td{color:var(--ink);font-weight:600}
+.rcalc tr.ccost td.csum{color:#b3261e}
+.rcalc tr.ctotal td{font-weight:700;color:var(--ink);border-top:2px solid var(--line-strong);padding-top:14px}
+.rcalc tr.ctotal td.csum{color:var(--primary);font-size:16px}
+.rcalc .calc-note{margin-top:18px;font-size:12.5px;color:var(--faint);line-height:1.5}
+.rcalc .calc-cta{margin-top:22px}
+@media(max-width:760px){.rcalc .calc-inputs{grid-template-columns:1fr}}
+</style>
+<div class="wrap"><div class="calc-card">
+<h2>Сколько вы сэкономите с RentOS</h2>
+<div class="calc-inputs">
+  <div class="cin"><label>Квартир в управлении</label><input type="number" id="rc-apts" value="10" min="1" inputmode="numeric"></div>
+  <div class="cin"><label>Оборот за год, ₽</label><input type="number" id="rc-turn" value="9000000" min="0" step="100000" inputmode="numeric"></div>
+  <div class="cin"><label>Чистая прибыль в месяц, ₽</label><input type="number" id="rc-prof" value="300000" min="0" step="10000" inputmode="numeric"></div>
+</div>
+<div class="calc-min" id="rc-min">Калькулятор рассчитан на компании от 10 квартир.</div>
+<div class="calc-total" id="rc-total"></div>
+<table><thead><tr><th>Статья</th><th class="csum">В первый год</th></tr></thead><tbody id="rc-table"></tbody></table>
+<div class="calc-note">Расчёт является ориентировочным, основан на введённых данных и не гарантирует получение указанной экономии.</div>
+<div class="calc-cta"><a href="https://app.rentos.online/" class="btn btn-primary">Получи доступ</a></div>
+</div></div>
+<script>
+(function(){
+  var apts=document.getElementById('rc-apts'),turn=document.getElementById('rc-turn'),prof=document.getElementById('rc-prof');
+  var tbl=document.getElementById('rc-table'),tot=document.getElementById('rc-total'),mn=document.getElementById('rc-min');
+  var turnTouched=false;
+  function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+  function redraw(){
+    var a=parseInt(apts.value)||0,t=parseFloat(turn.value)||0,p=parseFloat(prof.value)||0;
+    if(a<10){mn.style.display='block';tbl.innerHTML='';tot.innerHTML='';return}
+    mn.style.display='none';
+    var fot=(Math.ceil(a/50)*80000-(a<=50?1:2)*25000)*12; if(fot<0)fot=0;
+    var rows=[
+      ['Внедрение CRM',200000],
+      ['Ежегодный платёж за CRM',180000],
+      ['Сервис для переписок с гостями',72000],
+      ['Сервис подписания договоров',28000],
+      ['Эквайринг без комиссии',t*0.0043],
+      ['ФОТ',fot],
+      ['Доплаты и продления: +25%',t*0.0125],
+      ['Рейтинг держится',p*0.10*12]
+    ];
+    var sum=0,html='';
+    for(var i=0;i<rows.length;i++){sum+=rows[i][1];html+='<tr><td>'+rows[i][0]+'</td><td class="csum">+'+fmt(rows[i][1])+'</td></tr>'}
+    var cost=t*0.025;sum-=cost;
+    html+='<tr class="ccost"><td>Стоимость RentOS — 2,5% с оборота</td><td class="csum">−'+fmt(cost)+'</td></tr>';
+    html+='<tr class="ctotal"><td>Итого за год</td><td class="csum">'+fmt(sum)+'</td></tr>';
+    tbl.innerHTML=html;
+    tot.innerHTML='Ваша выгода за год: <b>'+fmt(sum)+'</b>';
+  }
+  apts.addEventListener('input',function(){if(!turnTouched){turn.value=(parseInt(apts.value)||0)*900000}redraw()});
+  turn.addEventListener('input',function(){turnTouched=true;redraw()});
+  prof.addEventListener('input',redraw);
+  redraw();
+})();
+</script>
 </section>
 
 <!-- FINAL CTA -->
@@ -844,9 +925,9 @@
     <div class="final-card">
       <div class="eyebrow">Закрытая бета</div>
       <h2>Отдай ночную смену системе</h2>
-      <p>Напиши боту — пришлём ссылку на приложение, как только оно выйдет, и промо ролики, как RentOS работает изнутри: самозаселение, замки, приёмка уборки, деньги.</p>
-      <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener" class="btn btn-glow">Получи ранний доступ →</a>
-      <div class="smallnote">@rentosbetabot · ссылка на приложение и видео функций</div>
+      <p>Зарегистрируйся — и RentOS начнёт работать на твои квартиры уже сегодня: самозаселение, замки, приёмка уборки, деньги.</p>
+      <a href="https://app.rentos.online/" class="btn btn-glow">Получи ранний доступ →</a>
+      <div class="smallnote">Регистрация за пару минут · без карты</div>
       <div class="members">
         Уже среди подключённых операторов?
         <a href="#" data-cabinet>
@@ -871,7 +952,7 @@
         <a href="#game">Мини-игра «Ночная смена»</a>
         <a href="#top">Возможности</a>
         <a href="#pricing">Стоимость</a>
-        <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">Доступ в бету</a>
+        <a href="https://app.rentos.online/">Доступ в бету</a>
       </div>
       <div class="foot-col">
         <h5>Документы</h5>
@@ -890,7 +971,7 @@
         Правообладатель ПО «RentOS»: Общество с ограниченной ответственностью «РЭНТОС» (ООО «РЭНТОС»)<br>
         ОГРН 1265000042856 · ИНН 5027347760 · КПП 502701001<br>
         Адрес: 140003, Московская обл., г.о. Люберцы, г. Люберцы, ул. Лётчика Ларюшина, д. 6, кв. 199<br>
-        Тел.: <a href="tel:+79850783643">+7 985 078-36-43</a> · E-mail: <a href="mailto:info@rentos.online">info@rentos.online</a> · Telegram: <a href="https://t.me/rentosbetabot" target="_blank" rel="noopener">@rentosbetabot</a><br>
+        Тел.: <a href="tel:+79850783643">+7 985 078-36-43</a> · E-mail: <a href="mailto:info@rentos.online">info@rentos.online</a><br>
         Вид деятельности в области информационных технологий (приказ Минцифры России от 11.05.2023 № 449): <b>1.01</b> — проектирование, разработка, адаптация и модификация программного обеспечения. ОКВЭД 62.01.<br>
         © <span id="year"></span> ООО «РЭНТОС». Все права защищены.
       </div>
@@ -1182,6 +1263,15 @@
     try{ localStorage.setItem(KEY,'1'); }catch(e){}
     bar.classList.remove('show');
   });
+})();
+</script>
+
+<script>
+(function(){
+  var els=document.querySelectorAll('.demo-action,.lc-tip-btn,.gcard');
+  if(!els.length||!('IntersectionObserver' in window))return;
+  var io=new IntersectionObserver(function(en){en.forEach(function(e){if(e.isIntersecting){e.target.classList.add('rpulse')}else{e.target.classList.remove('rpulse')}})},{threshold:.05});
+  els.forEach(function(el){io.observe(el);el.addEventListener('click',function(){el.classList.remove('rpulse');io.unobserve(el)},{once:true})});
 })();
 </script>
 </body>
