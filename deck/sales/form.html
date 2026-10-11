@@ -1,0 +1,42 @@
+<section style="box-sizing:border-box;width:1920px;height:1080px;padding:50px 90px;background:#F5F6FA;color:#1B2130;font-family:-apple-system,BlinkMacSystemFont,system-ui,sans-serif;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden">
+<span style="position:absolute;left:90px;top:24px;font-family:Unbounded,sans-serif;font-weight:800;font-size:22px">RentOS<span style="color:#5B7CDE">.</span></span>
+<div style="margin-top:24px;display:flex;justify-content:space-between;align-items:baseline;gap:30px">
+  <div style="font-family:Unbounded,sans-serif;font-weight:600;font-size:40px;letter-spacing:-.02em">Считаем на ваших цифрах</div>
+  <div style="display:flex;gap:14px;align-items:flex-end">
+    <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:16px;color:#5A6472">Квартир</span><input id="f_flats" type="number" placeholder="10" style="width:120px;font-size:24px;padding:10px 14px;border:1px solid #D9DEE8;border-radius:11px;background:#fff"></label>
+    <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:16px;color:#5A6472">Оборот в месяц, ₽</span><input id="f_turn" type="number" placeholder="750000" style="width:200px;font-size:24px;padding:10px 14px;border:1px solid #D9DEE8;border-radius:11px;background:#fff"></label>
+    <label style="display:flex;flex-direction:column;gap:4px"><span style="font-size:16px;color:#5A6472">Прибыль в месяц, ₽</span><input id="f_prof" type="number" placeholder="150000" style="width:200px;font-size:24px;padding:10px 14px;border:1px solid #D9DEE8;border-radius:11px;background:#fff"></label>
+    <button id="f_add" style="border:0;border-radius:11px;padding:12px 20px;background:#5B7CDE;color:#fff;font-size:18px;font-weight:600;cursor:pointer;height:48px">+ строка</button>
+  </div>
+</div>
+<div style="display:grid;grid-template-columns:1fr 230px 250px 44px;gap:12px;padding:0 20px;font-family:Menlo,monospace;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:#8A93A3">
+  <span>статья расхода</span><span style="text-align:right">в месяц</span><span style="text-align:right">в год</span><span></span>
+</div>
+<div id="f_rows" style="flex:1;display:flex;flex-direction:column;gap:9px;overflow:auto;min-height:0;padding-right:4px"></div>
+<div style="display:grid;grid-template-columns:1fr 230px 250px 44px;gap:12px;padding:16px 20px;background:#E7EBF3;border-radius:14px;align-items:baseline">
+  <span style="font-size:24px;font-weight:600">Итого</span>
+  <span id="f_sm" style="font-family:Menlo,monospace;font-size:26px;text-align:right">0 ₽</span>
+  <span id="f_sy" style="font-family:Unbounded,sans-serif;font-weight:800;font-size:32px;text-align:right;color:#E24B4A">0 ₽</span>
+  <span></span>
+</div>
+<img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="display:none" onerror="(function(){var K='rentos_sales_calc';var d={rows:[]};try{d=Object.assign({rows:[]},JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
+if(!d.rows||!d.rows.length)d.rows=[{n:'Проверка уборок',v:''},{n:'CRM',v:''},{n:'Сервис договоров',v:''},{n:'Сервис переписок',v:''},{n:'Эквайринг',v:''},{n:'Доплаты, которые не берём',v:''}];
+var save=function(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}};
+var R=function(v){return Math.round(v).toLocaleString('ru-RU')+' ₽'};
+['f_flats','f_turn','f_prof'].forEach(function(id){var el=document.getElementById(id);if(d[id]!=null)el.value=d[id];el.addEventListener('input',function(){d[id]=el.value;save()})});
+var box=document.getElementById('f_rows');
+var total=function(){var t=d.rows.reduce(function(a,r){return a+(Number(r.v)||0)},0);document.getElementById('f_sm').textContent=R(t);document.getElementById('f_sy').textContent=R(t*12)};
+var draw=function(){box.innerHTML='';d.rows.forEach(function(r,i){
+var w=document.createElement('div');w.style.cssText='display:grid;grid-template-columns:1fr 230px 250px 44px;gap:12px;align-items:center';
+var a=document.createElement('input');a.value=r.n||'';a.placeholder='название';a.style.cssText='font-size:22px;padding:11px 16px;border:1px solid #D9DEE8;border-radius:11px;background:#fff';
+var m=document.createElement('input');m.type='number';m.value=r.v||'';m.placeholder='в месяц';m.style.cssText='font-size:22px;padding:11px 16px;border:1px solid #D9DEE8;border-radius:11px;background:#fff;text-align:right';
+var y=document.createElement('input');y.type='number';y.value=r.v?Math.round(Number(r.v)*12):'';y.placeholder='в год';y.style.cssText='font-size:22px;padding:11px 16px;border:1px solid #D9DEE8;border-radius:11px;background:#fff;text-align:right;color:#5A6472';
+var x=document.createElement('button');x.textContent='×';x.style.cssText='border:0;background:#E3E7EF;border-radius:11px;font-size:20px;color:#8A93A3;cursor:pointer;height:46px';
+a.addEventListener('input',function(){r.n=a.value;save()});
+m.addEventListener('input',function(){r.v=m.value;y.value=m.value?Math.round(Number(m.value)*12):'';save();total()});
+y.addEventListener('input',function(){r.v=y.value?Math.round(Number(y.value)/12):'';m.value=r.v;save();total()});
+x.addEventListener('click',function(){d.rows.splice(i,1);save();draw();total()});
+w.appendChild(a);w.appendChild(m);w.appendChild(y);w.appendChild(x);box.appendChild(w)})};
+document.getElementById('f_add').addEventListener('click',function(){d.rows.push({n:'',v:''});save();draw();total();box.scrollTop=box.scrollHeight});
+draw();total();save();})()">
+</section>
