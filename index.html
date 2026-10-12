@@ -475,6 +475,13 @@
     [id^="t"].toast{animation:none!important}
   }
 </style>
+<style id="calc-exp">
+.rcalc tr.cexp{cursor:pointer}
+.rcalc tr.cexp:hover td{background:#F8F9FC}
+.rcalc .carr{margin-left:6px;color:var(--faint);font-size:11px}
+.rcalc tr.cdet{display:none}
+.rcalc tr.cdet td{background:#F8F9FC;font-size:13px;color:var(--sub);line-height:1.5;padding:10px 12px}
+</style>
 </head>
 <body>
 
@@ -893,23 +900,36 @@
     if(a<10){mn.style.display='block';tbl.innerHTML='';tot.innerHTML='';return}
     mn.style.display='none';
     var fot=(Math.ceil(a/50)*80000-(a<=50?1:2)*25000)*12; if(fot<0)fot=0;
+    var sup=Math.ceil(a/50), ass=(a<=50?1:2);
     var rows=[
-      ['Внедрение CRM',200000],
-      ['Ежегодный платёж за CRM',180000],
-      ['Сервис для переписок с гостями',72000],
-      ['Сервис подписания договоров',28000],
-      ['Эквайринг без комиссии',t*0.0043],
-      ['ФОТ',fot],
-      ['Доплаты и продления: +25%',t*0.0125],
-      ['Рейтинг держится',p*0.10*12]
+      ['Внедрение CRM',200000,''],
+      ['Ежегодный платёж за CRM',180000,''],
+      ['Сервис для переписок с гостями',72000,''],
+      ['Сервис подписания договоров',28000,''],
+      ['Эквайринг без комиссии',t*0.0043,'0,7% примерно с 60% оборота (остальное приходит через площадки).<br>'+fmt(t)+' × 60% × 0,7% = '+fmt(t*0.0043)],
+      ['ФОТ',fot,'Без RentOS: '+sup+' супервайзер × 80 000 ₽/мес. С RentOS: супервайзера нет, '+ass+' ассистент × 25 000 ₽/мес.<br>('+fmt(sup*80000)+' − '+fmt(ass*25000)+') × 12 месяцев = '+fmt(fot)],
+      ['Доплаты',t*0.0125,'То, что менеджер стесняется выставить: лишний гость, животное, поздняя уборка. Составляет около 5% оборота, система увеличит продажи на 25%.<br>'+fmt(t)+' × 5% × 25% = '+fmt(t*0.0125)],
+      ['Дополнительные продажи',p*0.10*12,'Автоматизированные продажи ранних заездов и поздних выездов.<br>'+fmt(p)+' × 10% × 12 месяцев = '+fmt(p*0.10*12)]
     ];
     var sum=0,html='';
-    for(var i=0;i<rows.length;i++){sum+=rows[i][1];html+='<tr><td>'+rows[i][0]+'</td><td class="csum">+'+fmt(rows[i][1])+'</td></tr>'}
+    for(var i=0;i<rows.length;i++){
+      sum+=rows[i][1];
+      var ex=rows[i][2];
+      html+='<tr'+(ex?' class="cexp" data-i="'+i+'"':'')+'><td>'+rows[i][0]+(ex?'<span class="carr">▾</span>':'')+'</td><td class="csum">+'+fmt(rows[i][1])+'</td></tr>';
+      if(ex) html+='<tr class="cdet" id="cdet'+i+'"><td colspan="2">'+ex+'</td></tr>';
+    }
     var cost=t*0.025;sum-=cost;
     html+='<tr class="ccost"><td>Стоимость RentOS — 2,5% с оборота</td><td class="csum">−'+fmt(cost)+'</td></tr>';
     html+='<tr class="ctotal"><td>Итого за год</td><td class="csum">'+fmt(sum)+'</td></tr>';
     tbl.innerHTML=html;
     tot.innerHTML='Ваша выгода за год: <b>'+fmt(sum)+'</b>';
+    var exps=tbl.querySelectorAll('tr.cexp');
+    for(var k=0;k<exps.length;k++){exps[k].addEventListener('click',function(){
+      var d=document.getElementById('cdet'+this.getAttribute('data-i'));
+      if(!d)return; var open=d.style.display==='table-row';
+      d.style.display=open?'none':'table-row';
+      var ar=this.querySelector('.carr'); if(ar)ar.textContent=open?'▾':'▴';
+    })}
   }
   apts.addEventListener('input',function(){if(!turnTouched){turn.value=(parseInt(apts.value)||0)*900000}redraw()});
   turn.addEventListener('input',function(){turnTouched=true;redraw()});
