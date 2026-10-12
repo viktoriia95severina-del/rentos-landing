@@ -903,8 +903,8 @@
     var a=parseInt(apts.value)||0,t=parseFloat(turn.value)||0,p=parseFloat(prof.value)||0;
     if(a<10){mn.style.display='block';tbl.innerHTML='';tot.innerHTML='';return}
     mn.style.display='none';
-    var fot=(Math.ceil(a/50)*80000-(a<=50?1:2)*25000)*12; if(fot<0)fot=0;
-    var sup=Math.ceil(a/50), ass=(a<=50?1:2);
+    var fot=(Math.ceil(a/50)*80000-Math.ceil(a/50)*25000)*12; if(fot<0)fot=0;
+    var sup=Math.ceil(a/50), ass=Math.ceil(a/50);
     var rows=[
       ['Внедрение CRM',200000,''],
       ['Ежегодный платёж за CRM',180000,''],
