@@ -895,6 +895,10 @@
   var tbl=document.getElementById('rc-table'),tot=document.getElementById('rc-total'),mn=document.getElementById('rc-min');
   var turnTouched=false;
   function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
+  function skl(n,one,few,many){var n10=n%10,n100=n%100;
+    if(n10===1&&n100!==11)return one;
+    if(n10>=2&&n10<=4&&(n100<10||n100>=20))return few;
+    return many}
   function redraw(){
     var a=parseInt(apts.value)||0,t=parseFloat(turn.value)||0,p=parseFloat(prof.value)||0;
     if(a<10){mn.style.display='block';tbl.innerHTML='';tot.innerHTML='';return}
@@ -907,7 +911,7 @@
       ['Сервис для переписок с гостями',72000,''],
       ['Сервис подписания договоров',28000,''],
       ['Эквайринг без комиссии',t*0.0043,'0,7% примерно с 60% оборота (остальное приходит через площадки).<br>'+fmt(t)+' × 60% × 0,7% = '+fmt(t*0.0043)],
-      ['ФОТ',fot,'Без RentOS: '+sup+' супервайзер × 80 000 ₽/мес. С RentOS: супервайзера нет, '+ass+' ассистент × 25 000 ₽/мес.<br>('+fmt(sup*80000)+' − '+fmt(ass*25000)+') × 12 месяцев = '+fmt(fot)],
+      ['ФОТ',fot,'Без RentOS: '+sup+' '+skl(sup,'супервайзер','супервайзера','супервайзеров')+' × 80 000 ₽/мес. С RentOS: '+skl(sup,'супервайзер','супервайзера','супервайзеров')+' нет, '+ass+' '+skl(ass,'ассистент','ассистента','ассистентов')+' × 25 000 ₽/мес.<br>('+fmt(sup*80000)+' − '+fmt(ass*25000)+') × 12 месяцев = '+fmt(fot)],
       ['Доплаты',t*0.0125,'То, что менеджер стесняется выставить: лишний гость, животное, поздняя уборка. Составляет около 5% оборота, система увеличит продажи на 25%.<br>'+fmt(t)+' × 5% × 25% = '+fmt(t*0.0125)],
       ['Дополнительные продажи',p*0.10*12,'Автоматизированные продажи ранних заездов и поздних выездов.<br>'+fmt(p)+' × 10% × 12 месяцев = '+fmt(p*0.10*12)]
     ];
