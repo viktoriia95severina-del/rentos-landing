@@ -8,15 +8,15 @@
   <span>статья</span><span style="text-align:right">в месяц</span><span style="text-align:right">в год</span>
 </div>
 <div id="c_rows" style="flex:1;display:flex;flex-direction:column;gap:9px;overflow:auto;min-height:0"></div>
-<div style="display:grid;grid-template-columns:1fr 230px 260px;gap:14px;padding:16px 24px;background:#161F36;border-radius:16px;align-items:baseline">
-  <span style="font-size:26px;font-weight:600">Итого уходит</span>
-  <span id="c_m" style="font-family:Menlo,monospace;font-size:28px;text-align:right;color:#FF6B61">—</span>
-  <span id="c_y" style="font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;text-align:right;color:#FF6B61">—</span>
-</div>
 <div style="display:grid;grid-template-columns:1fr 230px 260px;gap:14px;padding:16px 24px;align-items:baseline">
   <span id="c_feelbl" style="font-size:24px;color:#C2CCE4">RentOS — 2,5% с оборота</span>
-  <span id="c_fm" style="font-family:Menlo,monospace;font-size:26px;text-align:right;color:#5FD973">—</span>
-  <span id="c_fy" style="font-family:Unbounded,sans-serif;font-weight:700;font-size:34px;text-align:right;color:#5FD973">—</span>
+  <span id="c_fm" style="font-family:Menlo,monospace;font-size:26px;text-align:right;color:#C2CCE4">—</span>
+  <span id="c_fy" style="font-family:Unbounded,sans-serif;font-weight:700;font-size:34px;text-align:right;color:#C2CCE4">—</span>
+</div>
+<div style="display:grid;grid-template-columns:1fr 230px 260px;gap:14px;padding:16px 24px;background:#161F36;border-radius:16px;align-items:baseline">
+  <span style="font-size:26px;font-weight:600">Итого ваша выгода</span>
+  <span id="c_m" style="font-family:Menlo,monospace;font-size:28px;text-align:right;color:#5FD973">—</span>
+  <span id="c_y" style="font-family:Unbounded,sans-serif;font-weight:800;font-size:38px;text-align:right;color:#5FD973">—</span>
 </div>
 <div id="c_note" style="font-size:22px;color:#93A0C2"></div>
 <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="display:none" onerror="(function(){var d={rows:[]};try{d=Object.assign({rows:[]},JSON.parse(localStorage.getItem('rentos_sales_calc')||'{}'))}catch(e){}
@@ -26,9 +26,9 @@ var rows=(d.rows||[]).filter(function(r){return n(r.v)>0});
 document.getElementById('c_head').textContent=(flats?flats+' квартир · ':'')+(turn?'оборот '+R(turn*12)+' в год':'');
 document.getElementById('c_rows').innerHTML=rows.map(function(r){return '<div style=\'display:grid;grid-template-columns:1fr 230px 260px;gap:14px;align-items:center;background:#1A2236;border-radius:12px;padding:13px 24px\'><span style=\'font-size:24px\'>'+(r.n||'—')+'</span><span style=\'font-family:Menlo,monospace;font-size:23px;text-align:right;color:#C2CCE4\'>'+R(n(r.v))+'</span><span style=\'font-family:Menlo,monospace;font-size:25px;text-align:right;color:#FF6B61\'>'+R(n(r.v)*12)+'</span></div>'}).join('')||'<div style=\'font-size:24px;color:#93A0C2;padding:20px 24px\'>Заполните анкету на первом слайде</div>';
 var m=rows.reduce(function(a,r){return a+n(r.v)},0);
-document.getElementById('c_m').textContent=R(m);document.getElementById('c_y').textContent=R(m*12);
 var fm=turn*0.025;document.getElementById('c_fm').textContent=R(fm);document.getElementById('c_fy').textContent=R(fm*12);
-var diff=(m-fm)*12;
-document.getElementById('c_note').textContent=diff>0?('Разница за год — '+R(diff)+(prof>0?'. Это '+Math.round(diff/(prof*12)*100)+'% вашей годовой прибыли.':'')):'';
+var gain=m-fm;
+document.getElementById('c_m').textContent=R(gain);document.getElementById('c_y').textContent=R(gain*12);
+document.getElementById('c_note').textContent=gain>0&&prof>0?('Это '+Math.round(gain*12/(prof*12)*100)+'% вашей годовой прибыли.'):'';
 })()">
 </section>

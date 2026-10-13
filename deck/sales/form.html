@@ -20,12 +20,14 @@
   <span></span>
 </div>
 <img src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" style="display:none" onerror="(function(){var K='rentos_sales_calc';var d={rows:[]};try{d=Object.assign({rows:[]},JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
-if(!d.rows||!d.rows.length)d.rows=[{n:'Проверка уборок',v:''},{n:'CRM',v:''},{n:'Сервис договоров',v:''},{n:'Сервис переписок',v:''},{n:'Эквайринг',v:''},{n:'Доплаты, которые не берём',v:''}];
+if(!d.rows||!d.rows.length)d.rows=[{n:'Проверка уборок',v:'',s:'f',k:55000},{n:'CRM',v:''},{n:'Сервис договоров',v:''},{n:'Сервис переписок',v:''},{n:'Эквайринг',v:'',s:'t',k:0.0043},{n:'Доплаты, которые не берёте',v:'',s:'t',k:0.0125},{n:'Дополнительные продажи',v:'',s:'p',k:0.10}];
+/*MIGR*/[['Проверка уборок','f',55000],['Эквайринг','t',0.0043],['Доплаты, которые не берёте','t',0.0125],['Дополнительные продажи','p',0.10]].forEach(function(z){var k=z[0].split(',')[0],r=null;d.rows.forEach(function(q){if(q.n&&q.n.indexOf(k)===0)r=q});if(!r){r={n:z[0],v:''};d.rows.push(r)}if(!r.k){r.s=z[1];r.k=z[2]}});
 var save=function(){try{localStorage.setItem(K,JSON.stringify(d))}catch(e){}};
 var R=function(v){return Math.round(v).toLocaleString('ru-RU')+' ₽'};
-['f_flats','f_turn','f_prof'].forEach(function(id){var el=document.getElementById(id);if(d[id]!=null)el.value=d[id];el.addEventListener('input',function(){d[id]=el.value;save()})});
+['f_flats','f_turn','f_prof'].forEach(function(id){var el=document.getElementById(id);if(d[id]!=null)el.value=d[id];el.addEventListener('input',function(){d[id]=el.value;recalc();save();draw();total()})});
 var box=document.getElementById('f_rows');
 var total=function(){var t=d.rows.reduce(function(a,r){return a+(Number(r.v)||0)},0);document.getElementById('f_sm').textContent=R(t);document.getElementById('f_sy').textContent=R(t*12)};
+var recalc=function(){var t=Number(d.f_turn)||0,p=Number(d.f_prof)||0,f=Math.ceil((Number(d.f_flats)||0)/50);d.rows.forEach(function(x){if(!x.k||x.man)return;var q=(x.s=='p')?p:(x.s=='f')?f:t;x.v=q?Math.round(q*x.k):''})};
 var draw=function(){box.innerHTML='';d.rows.forEach(function(r,i){
 var w=document.createElement('div');w.style.cssText='display:grid;grid-template-columns:1fr 230px 250px 44px;gap:12px;align-items:center';
 var a=document.createElement('input');a.value=r.n||'';a.placeholder='название';a.style.cssText='font-size:22px;padding:11px 16px;border:1px solid #D9DEE8;border-radius:11px;background:#fff';
@@ -33,10 +35,10 @@ var m=document.createElement('input');m.type='number';m.value=r.v||'';m.placehol
 var y=document.createElement('input');y.type='number';y.value=r.v?Math.round(Number(r.v)*12):'';y.placeholder='в год';y.style.cssText='font-size:22px;padding:11px 16px;border:1px solid #D9DEE8;border-radius:11px;background:#fff;text-align:right;color:#5A6472';
 var x=document.createElement('button');x.textContent='×';x.style.cssText='border:0;background:#E3E7EF;border-radius:11px;font-size:20px;color:#8A93A3;cursor:pointer;height:46px';
 a.addEventListener('input',function(){r.n=a.value;save()});
-m.addEventListener('input',function(){r.v=m.value;y.value=m.value?Math.round(Number(m.value)*12):'';save();total()});
-y.addEventListener('input',function(){r.v=y.value?Math.round(Number(y.value)/12):'';m.value=r.v;save();total()});
+m.addEventListener('input',function(){r.v=m.value;r.man=1;y.value=m.value?Math.round(Number(m.value)*12):'';save();total()});
+y.addEventListener('input',function(){r.v=y.value?Math.round(Number(y.value)/12):'';r.man=1;m.value=r.v;save();total()});
 x.addEventListener('click',function(){d.rows.splice(i,1);save();draw();total()});
 w.appendChild(a);w.appendChild(m);w.appendChild(y);w.appendChild(x);box.appendChild(w)})};
 document.getElementById('f_add').addEventListener('click',function(){d.rows.push({n:'',v:''});save();draw();total();box.scrollTop=box.scrollHeight});
-draw();total();save();})()">
+recalc();draw();total();save();})()">
 </section>
