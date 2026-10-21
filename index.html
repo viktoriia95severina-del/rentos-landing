@@ -1399,7 +1399,7 @@
     if(!pd.checked){add('sys','Отметьте согласие на обработку персональных данных');pd.focus();return}
     var b=document.getElementById('rw-callbtn');b.disabled=true;b.textContent='…';
     fetch(API+'/api/site/call',{method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({phone:v,token:tok()||null,ref:ref()})})
+      body:JSON.stringify({phone:v,token:tok()||null,ref:ref(),pd:true})})
       .then(function(r){return r.json()}).then(function(d){
         b.disabled=false;b.textContent='Позвонить';
         if(d&&d.token)setTok(d.token);
