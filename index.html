@@ -1298,5 +1298,110 @@
   els.forEach(function(el){io.observe(el);el.addEventListener('click',function(){el.classList.remove('rpulse');io.unobserve(el)},{once:true})});
 })();
 </script>
+
+<!-- ВИДЖЕТ: звонок и чат -->
+<style id="rw-style">
+#rw-fab{position:fixed;right:22px;bottom:22px;z-index:9998;width:60px;height:60px;border-radius:50%;
+  background:#5B7CDE;border:none;cursor:pointer;box-shadow:0 10px 30px rgba(16,24,40,.28);
+  display:flex;align-items:center;justify-content:center;transition:transform .15s}
+#rw-fab:hover{transform:scale(1.06)}
+#rw-fab svg{width:27px;height:27px;stroke:#fff;fill:none;stroke-width:2}
+@keyframes rwp{0%,100%{box-shadow:0 10px 30px rgba(16,24,40,.28),0 0 0 0 rgba(91,124,222,.5)}
+  50%{box-shadow:0 10px 30px rgba(16,24,40,.28),0 0 0 14px rgba(91,124,222,0)}}
+#rw-fab.rwp{animation:rwp 2.2s ease-in-out infinite}
+#rw-dot{position:absolute;top:2px;right:2px;width:14px;height:14px;border-radius:50%;background:#E5484D;border:2px solid #fff;display:none}
+#rw-box{position:fixed;right:22px;bottom:94px;z-index:9999;width:340px;max-width:calc(100vw - 32px);
+  background:#fff;border-radius:18px;box-shadow:0 24px 64px rgba(16,24,40,.3);display:none;overflow:hidden;
+  font-family:var(--body,system-ui,sans-serif)}
+#rw-box.on{display:block}
+.rw-head{background:#0F1528;color:#fff;padding:14px 16px;font-weight:600;font-size:15px;display:flex;justify-content:space-between;align-items:center}
+.rw-head b{font-weight:600}
+.rw-x{cursor:pointer;opacity:.6;font-size:20px;line-height:1}
+.rw-call{padding:12px 16px;border-bottom:1px solid #ECEEF3;display:flex;gap:8px}
+.rw-call input{flex:1;min-width:0;border:1px solid #ECEEF3;border-radius:10px;padding:9px 11px;font-size:14px;font-family:inherit;outline:none}
+.rw-call input:focus{border-color:#5B7CDE}
+.rw-call button{background:#5B7CDE;color:#fff;border:none;border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:inherit}
+.rw-msgs{height:260px;overflow-y:auto;padding:14px 16px;background:#F8F9FC}
+.rw-m{margin-bottom:10px;font-size:14px;line-height:1.45;max-width:85%;padding:9px 12px;border-radius:14px}
+.rw-m.in{background:#fff;border:1px solid #ECEEF3;color:#1B2130;border-bottom-left-radius:4px}
+.rw-m.out{background:#5B7CDE;color:#fff;margin-left:auto;border-bottom-right-radius:4px}
+.rw-m.sys{background:transparent;color:#6B7280;font-size:12.5px;text-align:center;max-width:100%;padding:4px}
+.rw-send{display:flex;gap:8px;padding:12px 16px;border-top:1px solid #ECEEF3}
+.rw-send input{flex:1;min-width:0;border:1px solid #ECEEF3;border-radius:10px;padding:10px 12px;font-size:14px;font-family:inherit;outline:none}
+.rw-send input:focus{border-color:#5B7CDE}
+.rw-send button{background:#5B7CDE;color:#fff;border:none;border-radius:10px;padding:10px 14px;font-weight:600;cursor:pointer;font-family:inherit}
+@media(max-width:480px){#rw-box{right:12px;left:12px;width:auto;bottom:88px}}
+</style>
+<button id="rw-fab" class="rwp" aria-label="Связаться"><span id="rw-dot"></span>
+<svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></button>
+<div id="rw-box">
+  <div class="rw-head"><b>RentOS</b><span class="rw-x" id="rw-x">&times;</span></div>
+  <div class="rw-call">
+    <input id="rw-phone" type="tel" placeholder="Телефон — перезвоним" autocomplete="tel">
+    <button id="rw-callbtn">Позвонить</button>
+  </div>
+  <div class="rw-msgs" id="rw-msgs"></div>
+  <div class="rw-send">
+    <input id="rw-text" placeholder="Напишите вопрос" autocomplete="off">
+    <button id="rw-sendbtn">→</button>
+  </div>
+</div>
+<script>
+(function(){
+  var API='https://api.rentos.online', LS='rentos_site_chat', seen=0, opened=false;
+  var fab=document.getElementById('rw-fab'), box=document.getElementById('rw-box'),
+      msgs=document.getElementById('rw-msgs'), dot=document.getElementById('rw-dot');
+  function tok(){try{return localStorage.getItem(LS)||''}catch(e){return ''}}
+  function setTok(t){try{if(t)localStorage.setItem(LS,t)}catch(e){}}
+  function ref(){try{var m=document.cookie.match(/rentos_ref=([^;]+)/);return m?m[1]:null}catch(e){return null}}
+  function add(kind,text){var d=document.createElement('div');d.className='rw-m '+kind;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
+  function greet(){if(!msgs.children.length)add('in','Добрый день! Готовы ответить на любые вопросы')}
+  function render(list){
+    msgs.innerHTML='';
+    if(!list.length){greet();return}
+    list.forEach(function(m){add(m.direction==='in'?'out':(m.kind==='system'?'sys':'in'),m.text)});
+  }
+  function poll(){
+    var t=tok(); if(!t)return;
+    fetch(API+'/api/site/chat/poll?token='+encodeURIComponent(t)).then(function(r){return r.json()}).then(function(d){
+      if(!d||!d.ok)return;
+      var inc=d.messages.filter(function(m){return m.direction==='out'}).length;
+      if(opened)render(d.messages);
+      if(inc>seen&&!opened){dot.style.display='block';fab.classList.add('rwp')}
+      seen=Math.max(seen,inc);
+    }).catch(function(){});
+  }
+  fab.addEventListener('click',function(){
+    opened=!box.classList.contains('on');
+    box.classList.toggle('on');
+    fab.classList.remove('rwp');dot.style.display='none';
+    if(opened){greet();poll();document.getElementById('rw-text').focus()}
+  });
+  document.getElementById('rw-x').addEventListener('click',function(e){e.stopPropagation();box.classList.remove('on');opened=false});
+  function send(){
+    var i=document.getElementById('rw-text'),v=i.value.trim();
+    if(!v)return; i.value=''; add('out',v);
+    fetch(API+'/api/site/chat/send',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({text:v,token:tok()||null,ref:ref()})})
+      .then(function(r){return r.json()}).then(function(d){if(d&&d.token)setTok(d.token);setTimeout(poll,800)})
+      .catch(function(){add('sys','Не удалось отправить, попробуйте ещё раз')});
+  }
+  document.getElementById('rw-sendbtn').addEventListener('click',send);
+  document.getElementById('rw-text').addEventListener('keydown',function(e){if(e.key==='Enter')send()});
+  document.getElementById('rw-callbtn').addEventListener('click',function(){
+    var i=document.getElementById('rw-phone'),v=i.value.replace(/\D/g,'');
+    if(v.length<10){i.focus();return}
+    var b=document.getElementById('rw-callbtn');b.disabled=true;b.textContent='…';
+    fetch(API+'/api/site/call',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({phone:v,token:tok()||null,ref:ref()})})
+      .then(function(r){return r.json()}).then(function(d){
+        b.disabled=false;b.textContent='Позвонить';
+        if(d&&d.token)setTok(d.token);
+        if(d&&d.ok){i.value='';add('sys',d.message||'Заявка принята')}else add('sys','Не удалось отправить заявку');
+      }).catch(function(){b.disabled=false;b.textContent='Позвонить';add('sys','Не удалось отправить заявку')});
+  });
+  setInterval(poll,7000); poll();
+})();
+</script>
 </body>
 </html>
