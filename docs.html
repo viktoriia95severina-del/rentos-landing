@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ru"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Документация — RentOS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{--primary:#5B7CDE;--ink:#1B2130;--sub:#6B7280;--line:#ECEEF3;--paper:#F5F6FA;--card:#fff;
+    --disp:'Unbounded',sans-serif;--body:'Inter',sans-serif;--mono:'JetBrains Mono',monospace}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:var(--body);background:var(--paper);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .top{background:#0F1528;padding:18px 0}
+  .wrap{max-width:840px;margin:0 auto;padding:0 24px}
+  .logo{font-family:var(--disp);font-weight:800;font-size:20px;color:#fff;text-decoration:none;letter-spacing:-.02em}
+  .logo span{color:#8AA6FF}
+  main{padding:52px 0 80px}
+  h1{font-family:var(--disp);font-weight:600;font-size:clamp(24px,3.4vw,34px);letter-spacing:-.02em;margin-bottom:10px;line-height:1.2}
+  .updated{font-family:var(--mono);font-size:12px;color:var(--sub);margin-bottom:32px}
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:clamp(22px,4vw,40px);
+    box-shadow:0 1px 2px rgba(16,24,40,.04)}
+  h2{font-family:var(--disp);font-weight:600;font-size:19px;margin:34px 0 12px;letter-spacing:-.01em}
+  h2:first-child{margin-top:0}
+  h3{font-size:16px;font-weight:700;margin:22px 0 8px}
+  p{margin-bottom:12px;font-size:15px;color:#374151}
+  ul,ol{margin:0 0 14px 20px}
+  li{margin-bottom:7px;font-size:15px;color:#374151}
+  a{color:var(--primary)}
+  table{width:100%;border-collapse:collapse;margin:14px 0 18px;font-size:14px}
+  td,th{border:1px solid var(--line);padding:10px 12px;text-align:left;vertical-align:top;color:#374151}
+  th{background:#F8F9FC;font-weight:600;color:var(--ink)}
+  .back{display:inline-block;margin-top:28px;font-size:14px;font-weight:600;text-decoration:none}
+  footer{border-top:1px solid var(--line);padding:26px 0;font-size:13px;color:var(--sub)}
+</style></head><body>
+<div class="top"><div class="wrap"><a class="logo" href="/">RentOS<span>.</span></a></div></div>
+<main><div class="wrap">
+<h1>Документация RentOS</h1>
+<div class="updated">Версия программы 1.0 · документация от 28.10.2026</div>
+<div class="doc">
+<p>RentOS — программа для ЭВМ, облачная платформа (SaaS) для операторов посуточной аренды жилья: бронирования, расчёты с гостями, документы, коды доступа, чаты, уборки, финансовая отчётность. Правообладатель — ООО «РЭНТОС» (ИНН 5027347760, ОГРН 1265000042856).</p>
+
+<h2>Документы</h2>
+<ul>
+<li><a href="/docs/RentOS_funkcionalnoe_opisanie.pdf">Описание функциональных характеристик</a> (PDF)</li>
+<li><a href="/docs/RentOS_rukovodstvo_polzovatelya.pdf">Руководство пользователя: установка и эксплуатация</a> (PDF)</li>
+<li><a href="/license.html">Лицензионное соглашение (оферта)</a></li>
+<li><a href="/terms.html">Пользовательское соглашение</a></li>
+<li><a href="/policy.html">Политика обработки персональных данных</a></li>
+</ul>
+
+<h2>Установка и системные требования</h2>
+<p>Программа предоставляется по модели SaaS: установка на оборудование пользователя не требуется. Доступ — через браузер по адресу <a href="https://app.rentos.online/">https://app.rentos.online/</a> после регистрации. Интерфейс на русском языке.</p>
+<table>
+<tr><th>Параметр</th><th>Требование</th></tr>
+<tr><td>Браузер</td><td>Яндекс Браузер, Chrome, Firefox, Safari — актуальные версии</td></tr>
+<tr><td>Операционная система рабочего места</td><td>Любая, где работает указанный браузер: Astra Linux, РЕД ОС, ALT Linux, Windows, macOS, Android, iOS</td></tr>
+<tr><td>Серверная часть</td><td>Размещается и обслуживается правообладателем на серверах в Российской Федерации</td></tr>
+</table>
+
+<h2>Стоимость</h2>
+<p>Условия и стоимость использования программы — в разделе <a href="/#pricing">«Тарифы»</a> на главной странице сайта.</p>
+
+<h2>Техническая поддержка</h2>
+<p>Поддержка пользователей осуществляется правообладателем на территории Российской Федерации: <a href="mailto:info@rentos.online">info@rentos.online</a>, чат поддержки в личном кабинете. Обновления программы выпускает правообладатель; принудительных обновлений из-за рубежа нет.</p>
+</div>
+<a class="back" href="/">← На главную</a>
+</div></main>
+<footer><div class="wrap">ООО «РЭНТОС» · ИНН 5027347760 · ОГРН 1265000042856 · <a href="mailto:info@rentos.online">info@rentos.online</a></div></footer>
+</body></html>
