@@ -387,6 +387,14 @@
   .price-allin{margin-top:20px;font-size:15px;color:var(--ink);font-weight:600;line-height:1.5}
   .price-num{font-family:var(--disp);font-weight:800;font-size:clamp(46px,8vw,72px);color:var(--primary);letter-spacing:-.03em;line-height:1}
   .price-of{font-size:17px;color:var(--ink);font-weight:600;margin-top:10px}
+  /* land_tariff_v1 */
+  .price-two{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:4px}
+  .price-two .pt{border:1px solid var(--line);border-radius:16px;padding:18px 12px 16px;background:#fff}
+  .price-two .pt .price-num{font-size:clamp(38px,6vw,56px)}
+  .price-two .pt .price-of{font-size:15px}
+  .price-switch{font-size:13.5px;color:var(--sub);margin-top:12px}
+  @media(max-width:520px){.price-two{grid-template-columns:1fr}}
+  .rcalc .cin select{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:11px;padding:11px 13px;font-size:15px;font-family:var(--body);color:var(--ink);background:#fff;outline:none}
   .price-sub{font-size:15px;color:var(--sub);margin-top:10px;line-height:1.6}
   .price-incl{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:26px 0 0;text-align:left}
   .price-incl div{display:flex;gap:9px;align-items:flex-start;font-size:14px;color:#374151}
@@ -826,8 +834,11 @@
     </div>
     <div class="price-card">
       <div class="price-beta">Закрытая бета: для первых 100 операторов ставка 2,5% зафиксирована навсегда — это фактически себестоимость</div>
-      <div class="price-num">2,5%</div>
-      <div class="price-of">от стоимости брони</div>
+      <div class="price-two">
+        <div class="pt"><div class="price-num">2,5%</div><div class="price-of">выплаты 1 или 2 раза в месяц</div></div>
+        <div class="pt"><div class="price-num">3%</div><div class="price-of">выплаты каждый день</div></div>
+      </div>
+      <div class="price-switch">Тариф меняется в настройках кабинета в любой момент</div>
       <div class="price-sub">Нет броней — нет платежей. Нет платы за количество квартир, сотрудников и подключённых каналов.</div>
       <div class="price-incl">
         <div><span class="tk">✓</span> Самозаселение, замки и коды</div>
@@ -839,9 +850,9 @@
         <div><span class="tk">✓</span> Менеджер не дёргает вас: ИИ подсказывает, что ответить трудному гостю</div>
         <div><span class="tk">✓</span> Горничная не спрашивает вас: ИИ советует, как вывести пятно и что докупить</div>
       </div>
-      <div class="price-allin">Всё это — внутри 2,5%. Отдельные сервисы для этого можно с чистой совестью отключить.</div>
+      <div class="price-allin">Всё это входит в тариф. Отдельные сервисы для этого можно с чистой совестью отключить.</div>
       <div class="price-how">
-        <b>Как это работает:</b> гость платит на счёт ООО «РЭНТОС» — мы действуем как платёжный агент по вашему поручению. Вознаграждение — 2,5% от стоимости завершённых бронирований, остальное перечисляется вам по итогам расчётного периода. Отчёт агента — в личном кабинете.
+        <b>Как это работает:</b> гость платит на счёт ООО «РЭНТОС» — мы действуем как платёжный агент по вашему поручению. Удерживаем 2,5% или 3% по вашему тарифу, остальное перечисляем вам по итогам периода или каждое утро. Отчёт агента — в личном кабинете.
       </div>
       <div class="price-foot">Актуальные условия и порядок оплаты — в <a href="/license.html">Лицензионном соглашении</a>.</div>
     </div>
@@ -882,6 +893,7 @@
   <div class="cin"><label>Квартир в управлении</label><input type="number" id="rc-apts" value="10" min="1" inputmode="numeric"></div>
   <div class="cin"><label>Оборот за год, ₽</label><input type="number" id="rc-turn" value="9000000" min="0" step="100000" inputmode="numeric"></div>
   <div class="cin"><label>Чистая прибыль в месяц, ₽</label><input type="number" id="rc-prof" value="300000" min="0" step="10000" inputmode="numeric"></div>
+  <div class="cin"><label>Тариф</label><select id="rc-tariff"><option value="0.025">2,5% — выплаты 10 и 25</option><option value="0.03">3% — каждый день</option></select></div>
 </div>
 <div class="calc-min" id="rc-min">Калькулятор рассчитан на компании от 10 квартир.</div>
 <div class="calc-total" id="rc-total"></div>
@@ -891,7 +903,7 @@
 </div></div>
 <script>
 (function(){
-  var apts=document.getElementById('rc-apts'),turn=document.getElementById('rc-turn'),prof=document.getElementById('rc-prof');
+  var apts=document.getElementById('rc-apts'),turn=document.getElementById('rc-turn'),prof=document.getElementById('rc-prof'),trf=document.getElementById('rc-tariff');
   var tbl=document.getElementById('rc-table'),tot=document.getElementById('rc-total'),mn=document.getElementById('rc-min');
   var turnTouched=false;
   function fmt(n){return Math.round(n).toLocaleString('ru-RU')+' ₽'}
@@ -922,8 +934,8 @@
       html+='<tr'+(ex?' class="cexp" data-i="'+i+'"':'')+'><td>'+rows[i][0]+(ex?'<span class="carr">▾</span>':'')+'</td><td class="csum">+'+fmt(rows[i][1])+'</td></tr>';
       if(ex) html+='<tr class="cdet" id="cdet'+i+'"><td colspan="2">'+ex+'</td></tr>';
     }
-    var cost=t*0.025;sum-=cost;
-    html+='<tr class="ccost"><td>Стоимость RentOS — 2,5% с оборота</td><td class="csum">−'+fmt(cost)+'</td></tr>';
+    var rate=parseFloat(trf.value)||0.025, cost=t*rate;sum-=cost;
+    html+='<tr class="ccost"><td>Стоимость RentOS — '+(rate===0.03?'3%':'2,5%')+' с оборота</td><td class="csum">−'+fmt(cost)+'</td></tr>';
     html+='<tr class="ctotal"><td>Итого за год</td><td class="csum">'+fmt(sum)+'</td></tr>';
     tbl.innerHTML=html;
     tot.innerHTML='Ваша выгода за год: <b>'+fmt(sum)+'</b>';
@@ -938,6 +950,7 @@
   apts.addEventListener('input',function(){if(!turnTouched){turn.value=(parseInt(apts.value)||0)*900000}redraw()});
   turn.addEventListener('input',function(){turnTouched=true;redraw()});
   prof.addEventListener('input',redraw);
+  trf.addEventListener('change',redraw);
   redraw();
 })();
 </script>
