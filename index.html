@@ -74,18 +74,34 @@
   .hero-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
   .hero-note{font-family:var(--mono);font-size:12px;color:var(--night-sub);margin-top:14px;margin-bottom:20px}
 
-  /* phone mock with raining notifications */
-  .phone{position:relative;width:300px;height:480px;margin:0 auto;border-radius:40px;
-    background:linear-gradient(180deg,#1A2238,#10162a);border:1px solid var(--night-line);
-    box-shadow:0 40px 120px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.06);padding:18px}
-  .phone .screen{width:100%;height:100%;border-radius:26px;background:#0A0F1E;overflow:hidden;position:relative;border:1px solid #1d2742}
-  .phone .notch{position:absolute;top:10px;left:50%;transform:translateX(-50%);width:90px;height:6px;border-radius:99px;background:#26314D;z-index:5}
-  .toast{position:absolute;left:12px;right:12px;background:var(--night-card);border:1px solid var(--night-line);
-    border-radius:14px;padding:11px 12px;display:flex;gap:10px;align-items:center;opacity:0;transform:translateY(-14px);
-    box-shadow:0 8px 24px rgba(0,0,0,.4)}
-  .toast .ico{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;font-size:15px;flex:0 0 auto}
-  .toast .tx{font-size:12px;color:var(--night-ink);line-height:1.25}
-  .toast .tx small{display:block;color:var(--night-sub);font-family:var(--mono);font-size:10px;margin-top:2px}
+  /* iPhone lock screen */
+  .phone{position:relative;width:286px;height:574px;margin:0 auto;padding:7px;border-radius:48px;
+    background:linear-gradient(135deg,#9198a7 0%,#313949 26%,#171c27 55%,#697180 100%);
+    border:1px solid #838d9e;box-shadow:0 32px 84px rgba(0,0,0,.52),inset 0 0 0 1px #171c26}
+  .phone::before,.phone::after{content:"";position:absolute;width:3px;background:#778090;border-radius:2px}
+  .phone::before{left:-4px;top:103px;height:30px;box-shadow:0 39px #778090}
+  .phone::after{right:-4px;top:126px;height:53px}
+  .phone .screen{width:100%;height:100%;position:relative;overflow:hidden;border-radius:40px;border:3px solid #080a0f;
+    background:radial-gradient(ellipse at 88% 15%,#394e99,transparent 57%),
+    radial-gradient(ellipse at 16% 74%,#26305e,transparent 65%),linear-gradient(155deg,#151f3e,#0b1020 72%)}
+  .phone-island{position:absolute;top:9px;left:50%;transform:translateX(-50%);width:79px;height:23px;
+    border-radius:99px;background:#050609}
+  .phone-island::after{content:"";position:absolute;top:7px;right:8px;width:9px;height:9px;border-radius:50%;
+    background:radial-gradient(circle at 38% 32%,#485783,#151b30 43%,#090c12 68%)}
+  .phone-status{position:absolute;top:15px;right:16px;width:46px;height:11px;color:#f3f5ff}
+  .phone-clock{position:absolute;inset:48px 0 auto;text-align:center;color:#f3f5ff;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;font-size:53px;font-weight:600;letter-spacing:-.045em;line-height:1}
+  .phone-clock small{display:block;margin-bottom:5px;font-size:13px;font-weight:600;letter-spacing:0}
+  .phone-home{position:absolute;bottom:9px;left:50%;transform:translateX(-50%);width:89px;height:4px;
+    border-radius:99px;background:rgba(255,255,255,.82)}
+  .phone-notifications{position:absolute;top:133px;left:9px;right:9px;display:grid;gap:6px}
+  .toast{min-height:52px;background:rgba(221,229,255,.16);border:1px solid rgba(232,239,255,.15);
+    border-radius:15px;padding:7px 9px;display:flex;gap:8px;align-items:center;color:#f4f6ff;
+    font-family:-apple-system,BlinkMacSystemFont,sans-serif;backdrop-filter:blur(12px)}
+  .toast .ico{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;font-size:14px;flex:0 0 auto}
+  .toast .tx{font-size:12px;font-weight:600;line-height:1.25}
+  .toast .tx small{display:block;color:#d7dff4;font-size:10px;font-weight:500;margin-bottom:2px}
+  @media (prefers-reduced-motion:no-preference){.phone .toast[id]{opacity:0}}
   @keyframes drop{0%{opacity:0;transform:translateY(-18px)}8%{opacity:1;transform:translateY(0)}82%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(8px)}}
 
   /* ================= MARQUEE ================= */
@@ -514,7 +530,7 @@
     <div>
       <div class="clock"><span class="pulse"></span> ТЕБЕ ПИШЕТ ГОСТЬ</div>
       <h1>Гость пишет: «В квартире грязно». Горничная уже уехала.<br><span class="em">Угадай, кто поедет разгребать?</span></h1>
-      <p class="lead">Ты, конечно. <b>RentOS</b> проверяет уборку по фото до заезда и отправляет замечания горничной, если нужно что-то переделать.</p>
+      <p class="lead">Ты, конечно. <b>RentOS</b> проверяет уборку по фото до заезда и не слезет с горничной до тех пор, пока в квартире не будет чисто.</p>
       <div class="hero-note">// для профессиональных участников рынка посуточной аренды</div>
       <div class="hero-actions">
         <a href="https://app.rentos.online/" class="btn btn-glow">Подключись</a>
@@ -524,13 +540,25 @@
     <div>
       <div class="phone" aria-hidden="true">
         <div class="screen">
-          <div class="notch"></div>
-          <div class="toast" id="t1" style="top:38px"><div class="ico" style="background:rgba(245,165,36,.15)">💬</div><div class="tx">«В квартире грязно»<small>гость</small></div></div>
-          <div class="toast" id="t2" style="top:104px"><div class="ico" style="background:rgba(91,124,222,.18)">🧹</div><div class="tx">«Я уже уехала»<small>горничная</small></div></div>
-          <div class="toast" id="t3" style="top:170px"><div class="ico" style="background:rgba(226,75,74,.15)">💸</div><div class="tx">Вернуть депозит 5 000 ₽<small>после выезда</small></div></div>
-          <div class="toast" id="t4" style="top:236px"><div class="ico" style="background:rgba(47,179,68,.15)">🧹</div><div class="tx">Горничная не подтвердила<small>уборка завтра</small></div></div>
-          <div class="toast" id="t5" style="top:302px"><div class="ico" style="background:rgba(91,124,222,.18)">📅</div><div class="tx">Новое бронирование<small>Авито</small></div></div>
-          <div class="toast" id="t6" style="top:368px"><div class="ico" style="background:rgba(245,165,36,.15)">🛂</div><div class="tx">Паспорт на проверку<small>заселение через 1 ч</small></div></div>
+          <div class="phone-island"></div>
+          <svg class="phone-status" viewBox="0 0 46 11" fill="currentColor">
+            <rect x="0" y="7" width="2" height="3" rx=".5"/><rect x="3" y="5" width="2" height="5" rx=".5"/>
+            <rect x="6" y="3" width="2" height="7" rx=".5"/><rect x="9" y="1" width="2" height="9" rx=".5"/>
+            <path d="M15 4a8 8 0 0 1 11 0m-9 2a5 5 0 0 1 7 0m-5 2a2 2 0 0 1 3 0" fill="none" stroke="currentColor" stroke-width="1.35" stroke-linecap="round"/>
+            <circle cx="20.5" cy="9.5" r=".7"/>
+            <rect x="29.5" y="1.5" width="14" height="8" rx="2" fill="none" stroke="currentColor" opacity=".65"/>
+            <rect x="31" y="3" width="11" height="5" rx="1"/><path d="M45 4v3" stroke="currentColor" opacity=".65"/>
+          </svg>
+          <div class="phone-clock"><small>Вторник, 10 ноября</small>15:14</div>
+          <div class="phone-notifications">
+            <div class="toast"><div class="ico" style="background:#299f59">💬</div><div class="tx"><small>Гость</small>«В квартире грязно»</div></div>
+            <div class="toast"><div class="ico" style="background:#5266c5">🧹</div><div class="tx"><small>Горничная</small>«Я уже уехала»</div></div>
+            <div class="toast" id="t3"><div class="ico" style="background:rgba(226,75,74,.28)">💸</div><div class="tx"><small>После выезда</small>Вернуть депозит 5 000 ₽</div></div>
+            <div class="toast" id="t4"><div class="ico" style="background:rgba(47,179,68,.25)">🧹</div><div class="tx"><small>Уборка завтра</small>Горничная не подтвердила</div></div>
+            <div class="toast" id="t5"><div class="ico" style="background:rgba(91,124,222,.3)">📅</div><div class="tx"><small>Авито</small>Новое бронирование</div></div>
+            <div class="toast" id="t6"><div class="ico" style="background:rgba(245,165,36,.26)">🛂</div><div class="tx"><small>Заселение через 1 ч</small>Паспорт на проверку</div></div>
+          </div>
+          <div class="phone-home"></div>
         </div>
       </div>
     </div>
@@ -1041,12 +1069,10 @@
     }
   }
 
-  // phone raining toasts (looping)
+  // Keep the two messages from the headline visible.
   if(!reduce){
-    var toasts=['t1','t2','t3','t4','t5','t6'].map(function(id){return document.getElementById(id);}).filter(Boolean);
+    var toasts=document.querySelectorAll('.phone .toast[id]');
     toasts.forEach(function(el,idx){ el.style.animation='drop 4.5s '+(idx*0.7)+'s infinite ease-in-out'; });
-  } else {
-    ['t1','t2','t3','t4','t5','t6'].forEach(function(id){var e=document.getElementById(id); if(e) e.style.opacity=1;});
   }
 
   // footer doc placeholders
