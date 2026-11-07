@@ -72,7 +72,8 @@
   .hero h1{color:var(--primary-hi);font-weight:700;font-size:clamp(32px,4.2vw,52px);line-height:1.08;
     letter-spacing:-.04em;max-width:520px;margin-bottom:18px;text-wrap:balance}
   .hero p.lead{font-size:17px;line-height:1.55;color:var(--night-sub);max-width:46ch;margin-bottom:24px}
-  .hero p.lead b{color:var(--night-ink);font-weight:600}
+  .hero p.lead b,.hero-answer{color:var(--night-ink);font-weight:600}
+  .hero-answer{margin-bottom:8px}
   .hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
   .hero-actions .btn{height:48px;padding:0 20px;font-size:14px}
   .hero-note{font-size:12px;color:var(--night-sub);margin-top:14px}
@@ -532,10 +533,11 @@
   <div class="stars" id="stars"></div>
   <div class="wrap hero-grid">
     <div>
-      <div class="clock"><span class="pulse"></span> ТЕБЕ ПИШЕТ ГОСТЬ</div>
+      <div class="clock"><span class="pulse"></span> 20:18</div>
       <p class="hero-scene"><span>Гость пишет: «В квартире грязно».</span> <span>Горничная уже уехала.</span></p>
       <h1>Угадай, кто поедет разгребать?</h1>
-      <p class="lead"><b>Ты, конечно.</b> RentOS проверяет уборку по фото до заезда и не слезет с горничной до тех пор, пока в квартире не будет чисто.</p>
+      <p class="hero-answer">Ты, конечно, мой хороший, кто ж еще.</p>
+      <p class="lead"><b>RentOS</b> проверит уборку по фото до заезда и не слезет с горничной до тех пор, пока в квартире не будет чисто.</p>
       <div class="hero-actions">
         <a href="https://app.rentos.online/" class="btn btn-glow">Подключись</a>
         <a href="#game" class="btn btn-ghost">Проживи смену без RentOS</a>
@@ -554,7 +556,7 @@
             <rect x="29.5" y="1.5" width="14" height="8" rx="2" fill="none" stroke="currentColor" opacity=".65"/>
             <rect x="31" y="3" width="11" height="5" rx="1"/><path d="M45 4v3" stroke="currentColor" opacity=".65"/>
           </svg>
-          <div class="phone-clock"><small>Вторник, 10 ноября</small>15:14</div>
+          <div class="phone-clock"><small>Вторник, 10 ноября</small>20:18</div>
           <div class="phone-notifications">
             <div class="toast"><div class="ico" style="background:#299f59">💬</div><div class="tx"><small>Гость</small>«В квартире грязно»</div></div>
             <div class="toast"><div class="ico" style="background:#5266c5">🧹</div><div class="tx"><small>Горничная</small>«Я уже уехала»</div></div>
