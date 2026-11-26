@@ -1364,6 +1364,12 @@
 .rw-contact{padding:14px 16px}
 .rw-contact>label{display:block;font-size:14px;font-weight:600;margin-bottom:6px}
 #rw-phone{width:100%;border:1px solid #CCD2DF;border-radius:10px;padding:11px;font-size:16px;font-family:inherit}
+#rw-verification{margin-top:12px}
+#rw-code-row{margin-top:12px}
+#rw-code-row label{display:block;font-size:14px;margin-bottom:6px}
+#rw-code{width:100%;padding:10px;border:1px solid #CCD2DF;border-radius:10px;font:16px var(--body,system-ui,sans-serif)}
+#rw-send-code,#rw-verify-code,#rw-change-phone{min-height:42px;margin-top:8px;padding:9px 12px;border:1px solid #5B7CDE;border-radius:10px;background:#fff;color:#344B99;font:600 14px var(--body,system-ui,sans-serif);cursor:pointer}
+#rw-phone-status{font-size:14px;margin-top:8px;line-height:1.4;color:#375143}
 .rw-pd{display:flex;gap:9px;align-items:flex-start;margin-top:12px;font-size:14px;line-height:1.45;cursor:pointer}
 .rw-pd input{width:18px;height:18px;margin:2px 0 0;flex:0 0 auto}
 .rw-pd a{color:#405CB7;text-decoration:underline}
@@ -1395,6 +1401,16 @@
     <label for="rw-phone">Номер телефона</label>
     <input id="rw-phone" type="tel" placeholder="+7 999 123-45-67" autocomplete="tel" required aria-describedby="rw-error">
     <label class="rw-pd"><input type="checkbox" id="rw-pd-ok" required><span>Соглашаюсь на обработку персональных данных и с <a href="/policy.html" target="_blank" rel="noopener">политикой обработки</a></span></label>
+    <div id="rw-verification">
+      <button id="rw-send-code" type="button">Получить код по СМС</button>
+      <div id="rw-code-row" hidden>
+        <label for="rw-code">Код из СМС</label>
+        <input id="rw-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 цифр">
+        <button id="rw-verify-code" type="button">Подтвердить номер</button>
+      </div>
+      <p id="rw-phone-status" role="status"></p>
+      <button id="rw-change-phone" type="button" hidden>Изменить номер</button>
+    </div>
     <p id="rw-error" role="alert"></p>
     <button id="rw-callbtn" type="button" hidden>Заказать звонок</button>
   </div>
@@ -1415,11 +1431,44 @@
       consent=document.getElementById('rw-pd-ok'), error=document.getElementById('rw-error'),
       callButton=document.getElementById('rw-callbtn'), sendButton=document.getElementById('rw-sendbtn'),
       textInput=document.getElementById('rw-text');
+  var sendCode=document.getElementById('rw-send-code'), verifyCode=document.getElementById('rw-verify-code'),
+      codeInput=document.getElementById('rw-code'), codeRow=document.getElementById('rw-code-row'),
+      phoneStatus=document.getElementById('rw-phone-status'), changePhone=document.getElementById('rw-change-phone'),
+      challenge='', challengePhone='', proof=null, verifyBusy=false, retryAt=0, verificationKey='rentos_site_phone_verification';
+  function normalizedPhone(value){
+    var digits=String(value||'').replace(/\D/g,'');
+    if(digits.length===10)digits='7'+digits;
+    if(digits.length===11&&digits.charAt(0)==='8')digits='7'+digits.slice(1);
+    return /^[1-9]\d{10,14}$/.test(digits)?'+'+digits:null;
+  }
+  function clearProof(){proof=null;try{localStorage.removeItem(verificationKey)}catch(e){}}
+  function verified(){return proof&&proof.phone===normalizedPhone(phone.value)&&proof.expires>Date.now()}
+  function verificationUI(){
+    var confirmed=verified();
+    phone.readOnly=!!confirmed;
+    changePhone.hidden=!confirmed;
+    sendCode.hidden=!!confirmed;
+    codeRow.hidden=!!confirmed||!challenge;
+    if(confirmed)phoneStatus.textContent='Номер подтверждён';
+    var seconds=Math.max(0,Math.ceil((retryAt-Date.now())/1000));
+    sendCode.disabled=verifyBusy||seconds>0;
+    sendCode.textContent=seconds>0?'Повторить через '+seconds+' с':challenge?'Отправить код ещё раз':'Получить код по СМС';
+    verifyCode.disabled=verifyBusy;
+    if(!confirmed&&proof){clearProof();phoneStatus.textContent='Подтвердите номер ещё раз';}
+  }
+  try{var saved=JSON.parse(localStorage.getItem(verificationKey)||'null');if(saved&&saved.expires>Date.now()&&saved.phone&&/^[a-f0-9]{64}$/.test(saved.token)){proof=saved;phone.value=saved.phone}}catch(e){}
+  verificationUI();
+  phone.addEventListener('input',function(){
+    clearProof();challenge='';challengePhone='';phoneStatus.textContent='';codeInput.value='';verificationUI();
+  });
+  changePhone.addEventListener('click',function(){
+    clearProof();challenge='';challengePhone='';codeInput.value='';phoneStatus.textContent='';verificationUI();phone.focus();
+  });
   function tok(){try{return localStorage.getItem(LS)||''}catch(e){return ''}}
   function setTok(t){try{if(t)localStorage.setItem(LS,t)}catch(e){}}
   function ref(){try{var m=document.cookie.match(/rentos_ref=([^;]+)/);return m?m[1]:null}catch(e){return null}}
   function add(kind,text){var d=document.createElement('div');d.className='rw-m '+kind;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight}
-  function greet(){if(!msgs.children.length)add('in','Добрый день! Укажите телефон, отметьте согласие и напишите свой вопрос.')}
+  function greet(){if(!msgs.children.length)add('in','Добрый день! Подтвердите телефон кодом из СМС и напишите свой вопрос.')}
   function render(list){
     msgs.innerHTML='';
     if(!list.length){greet();return}
@@ -1450,21 +1499,56 @@
     (mode==='call'?callOpen:fab).focus();
   });
   function contact(){
-    var value=phone.value.replace(/\D/g,'');
-    if(!/^[1-9]\d{9,14}$/.test(value)){error.textContent='Укажите корректный номер телефона';phone.focus();return null}
+    var value=normalizedPhone(phone.value);
+    if(!value){error.textContent='Укажите корректный номер телефона';phone.focus();return null}
     if(!consent.checked){error.textContent='Отметьте согласие на обработку персональных данных';consent.focus();return null}
     error.textContent='';return value;
   }
   function request(path,body){
     return fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-      .then(function(r){return r.json().then(function(d){if(!r.ok||!d.ok)throw new Error(d.error||'Не удалось отправить. Попробуйте ещё раз.');return d})});
+      .then(function(r){return r.json().then(function(d){if(!r.ok||!d.ok){if(d.code==='PHONE_NOT_VERIFIED'){clearProof();challenge='';verificationUI();}var problem=new Error(d.error||'Не удалось отправить. Попробуйте ещё раз.');throw problem}return d})});
+  }
+  sendCode.addEventListener('click',function(){
+    if(verifyBusy||Date.now()<retryAt)return;
+    var number=contact();if(!number)return;
+    verifyBusy=true;phone.disabled=true;consent.disabled=true;verificationUI();
+    request('/api/site/phone/send-code',{phone:number,pd:true})
+      .then(function(d){
+        challenge=d.challenge;challengePhone=number;retryAt=Date.now()+d.retryAfter*1000;
+        codeInput.value='';phoneStatus.textContent='Код отправлен на '+number;error.textContent='';
+      })
+      .catch(function(e){error.textContent=e.message})
+      .finally(function(){verifyBusy=false;phone.disabled=false;consent.disabled=false;verificationUI();if(challenge)codeInput.focus()});
+  });
+  function confirmPhone(){
+    if(verifyBusy)return;
+    var number=contact();if(!number)return;
+    if(!challenge||number!==challengePhone){error.textContent='Сначала запросите код для этого номера';return}
+    var code=codeInput.value.trim();
+    if(!/^\d{6}$/.test(code)){error.textContent='Введите шестизначный код из СМС';codeInput.focus();return}
+    verifyBusy=true;phone.disabled=true;verificationUI();
+    request('/api/site/phone/verify-code',{phone:number,challenge:challenge,code:code})
+      .then(function(d){
+        proof={phone:d.phone,token:d.phoneVerification,expires:Date.now()+d.expiresIn*1000};
+        try{localStorage.setItem(verificationKey,JSON.stringify(proof))}catch(e){}
+        error.textContent='';codeInput.value='';
+      })
+      .catch(function(e){error.textContent=e.message})
+      .finally(function(){verifyBusy=false;phone.disabled=false;verificationUI()});
+  }
+  verifyCode.addEventListener('click',confirmPhone);
+  codeInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();confirmPhone()}});
+  function verifiedContact(){
+    var number=contact();if(!number)return null;
+    if(!verified()){verificationUI();error.textContent='Подтвердите номер кодом из СМС';(challenge?codeInput:sendCode).focus();return null}
+    return number;
   }
   function send(){
     if(sending)return;
     var value=textInput.value.trim();if(!value)return;
-    var number=contact();if(!number)return;
+    var number=verifiedContact();if(!number)return;
     sending=true;sendButton.disabled=true;
-    request('/api/site/chat/send',{text:value,phone:number,pd:true,token:tok()||null,ref:ref()})
+    request('/api/site/chat/send',{text:value,phone:number,pd:true,phoneVerification:proof.token,token:tok()||null,ref:ref()})
       .then(function(d){setTok(d.token);add('out',value);if(textInput.value.trim()===value)textInput.value='';textInput.focus()})
       .catch(function(e){error.textContent=e.message})
       .finally(function(){sending=false;sendButton.disabled=false});
@@ -1472,13 +1556,14 @@
   sendButton.addEventListener('click',send);
   textInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();send()}});
   callButton.addEventListener('click',function(){
-    var number=contact();if(!number)return;
+    var number=verifiedContact();if(!number)return;
     callButton.disabled=true;
-    request('/api/site/call',{phone:number,pd:true,token:tok()||null,ref:ref()})
+    request('/api/site/call',{phone:number,pd:true,phoneVerification:proof.token,token:tok()||null,ref:ref()})
       .then(function(d){setTok(d.token);error.textContent='';document.getElementById('rw-chat').hidden=false;document.querySelector('.rw-send').hidden=true;add('sys',d.message||'Заявка принята')})
       .catch(function(e){error.textContent=e.message})
       .finally(function(){callButton.disabled=false});
   });
+  setInterval(verificationUI,1000);
   setInterval(poll,7000);poll();
 })();
 </script>
